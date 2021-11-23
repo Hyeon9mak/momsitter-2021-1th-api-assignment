@@ -3,3 +3,14 @@
 .DS_Store
 .idea
 
+/* GRADLE */
+.gradle
+gradle
+
+gradlew
+
+gradlew.bat
+
+HELP.md
+
+settings.gradle
