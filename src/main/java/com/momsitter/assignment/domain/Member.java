@@ -33,8 +33,8 @@ public class Member {
     @Embedded
     private Password password;
 
-    @NotNull
-    private String email;
+    @Embedded
+    private Email email;
 
     protected Member() {
     }
@@ -47,7 +47,7 @@ public class Member {
             Gender.findByName(gender),
             new Id(id),
             new Password(password),
-            email
+            new Email(email)
         );
     }
 
@@ -58,7 +58,7 @@ public class Member {
         Gender gender,
         Id id,
         Password password,
-        String email
+        Email email
     ) {
         this.number = number;
         this.name = name;
@@ -94,7 +94,7 @@ public class Member {
     }
 
     public String getEmail() {
-        return email;
+        return email.getValue();
     }
 
     @Override
