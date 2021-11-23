@@ -41,8 +41,8 @@ class MemberServiceTest {
                 LocalDate.now(),
                 "남",
                 "hyeon9mak",
-                "password",
-                "email",
+                "pw123!@#",
+                "email@email.com",
                 sitterInfo
             );
 

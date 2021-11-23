@@ -28,7 +28,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
             LocalDate.now(),
             "남",
             "hyeon9mak",
-            "password",
+            "pw123!@#",
             "email@email.com",
             sitterInfo
         );
@@ -47,7 +47,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
             LocalDate.now(),
             "남",
             "hyeon9mak",
-            "password",
+            "pw123!@#",
             "email@email.com",
             sitterInfo
         );
