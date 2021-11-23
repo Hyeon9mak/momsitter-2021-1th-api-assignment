@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import java.util.Objects;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -23,7 +25,8 @@ public class Member {
     private DateOfBirth dateOfBirth;
 
     @NotNull
-    private String gender;
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
 
     @NotNull
     private String id;
@@ -38,14 +41,22 @@ public class Member {
     }
 
     public Member(String name, LocalDate dateOfBirth, String gender, String id, String password, String email) {
-        this(null, new Name(name), new DateOfBirth(dateOfBirth), gender, id, password, email);
+        this(
+            null,
+            new Name(name),
+            new DateOfBirth(dateOfBirth),
+            Gender.findByName(gender),
+            id,
+            password,
+            email
+        );
     }
 
     public Member(
         Long number,
         Name name,
         DateOfBirth dateOfBirth,
-        String gender,
+        Gender gender,
         String id,
         String password,
         String email
@@ -72,7 +83,7 @@ public class Member {
     }
 
     public String getGender() {
-        return gender;
+        return gender.name();
     }
 
     public String getId() {
