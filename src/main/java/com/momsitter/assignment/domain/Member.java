@@ -3,6 +3,7 @@ package com.momsitter.assignment.domain;
 import com.sun.istack.NotNull;
 import java.time.LocalDate;
 import java.util.Objects;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -15,8 +16,8 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long number;
 
-    @NotNull
-    private String name;
+    @Embedded
+    private Name name;
 
     @NotNull
     private LocalDate dateOfBirth;
@@ -37,12 +38,12 @@ public class Member {
     }
 
     public Member(String name, LocalDate dateOfBirth, String gender, String id, String password, String email) {
-        this(null, name, dateOfBirth, gender, id, password, email);
+        this(null, new Name(name), dateOfBirth, gender, id, password, email);
     }
 
     public Member(
         Long number,
-        String name,
+        Name name,
         LocalDate dateOfBirth,
         String gender,
         String id,
@@ -63,7 +64,7 @@ public class Member {
     }
 
     public String getName() {
-        return name;
+        return name.getValue();
     }
 
     public LocalDate getDateOfBirth() {
