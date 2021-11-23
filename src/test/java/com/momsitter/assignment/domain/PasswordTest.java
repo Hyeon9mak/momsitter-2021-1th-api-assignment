@@ -35,15 +35,15 @@ class PasswordTest {
         @Test
         void minLengthException() {
             // when, then
-            assertThatThrownBy(() -> new Password("세글자"))
+            assertThatThrownBy(() -> new Password("p1!"))
                 .isExactlyInstanceOf(InvalidPasswordException.class);
         }
 
-        @DisplayName("value의 길이가 10 초과면 예외가 발생한다.")
+        @DisplayName("value의 길이가 20 초과면 예외가 발생한다.")
         @Test
         void maxLengthException() {
             // when, then
-            assertThatThrownBy(() -> new Password("맘시터과제하는중임하하"))
+            assertThatThrownBy(() -> new Password("pw1!askdlkfajsdlkjfasdfzxcv"))
                 .isExactlyInstanceOf(InvalidPasswordException.class);
         }
 

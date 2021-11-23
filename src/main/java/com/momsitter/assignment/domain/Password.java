@@ -11,7 +11,7 @@ public class Password {
 
     private static final String PATTERN = "^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[^\\w\\s]).*$";
     private static final int MIN_LENGTH = 4;
-    private static final int MAX_LENGTH = 10;
+    private static final int MAX_LENGTH = 20;
 
     @NotNull
     @Column(name = "password")

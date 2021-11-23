@@ -27,8 +27,11 @@ public class MemberService {
     @Transactional
     public MemberResponse createSitter(CreateSitterRequest request) {
         Member member = memberRepository.save(request.toMember());
-        Sitter sitter = sitterRepository.save(request.toSitter());
+
+        Sitter sitter = request.toSitter();
         sitter.join(member);
+
+        sitterRepository.save(sitter);
 
         return MemberResponse.from(member, sitter);
     }
