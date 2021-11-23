@@ -29,6 +29,10 @@ dependencies {
 	// test
 	testImplementation 'io.rest-assured:rest-assured'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	// api-docs
+	implementation 'io.springfox:springfox-boot-starter:3.0.0'
+	implementation 'io.springfox:springfox-swagger-ui:3.0.0'
 }
 
 test {
