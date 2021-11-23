@@ -1,7 +1,9 @@
 spring:
+
   h2:
     console:
       enabled: true
+
   jpa:
     properties:
       hibernate:
@@ -9,3 +11,9 @@ spring:
     show_sql: true
     hibernate:
       ddl-auto: validate
+
+security:
+  jwt:
+    token:
+      secret-key: secret_key_hyeon9mak
+      expire-length: 3600000 # 1Hour
