@@ -37,7 +37,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         Created_상태코드와_결과를_반환받는다(request);
     }
 
-    @DisplayName("POST /api/members/sitter - 회원 이름이 Null이거나 공백이라면 예외가 발생한다.")
+    @DisplayName("POST /api/members/sitter - 잘못된 정보가 포함될 경우 회원가입에 실패한다.")
     @Test
     void nameNullOrBlankException() {
         // given
