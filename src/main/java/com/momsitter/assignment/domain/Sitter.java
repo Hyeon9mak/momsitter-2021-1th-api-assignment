@@ -60,7 +60,7 @@ public class Sitter {
         }
     }
 
-    public void join(Member member) {
+    public void mappedBy(Member member) {
         this.member = member;
     }
 

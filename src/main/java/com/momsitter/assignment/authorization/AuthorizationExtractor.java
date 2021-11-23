@@ -8,8 +8,6 @@ public class AuthorizationExtractor {
     private static final String AUTHORIZATION = "Authorization";
     private static final String BEARER = "Bearer";
     private static final String ACCESS_TOKEN_TYPE = "AuthorizationExtractor.ACCESS_TOKEN_TYPE";
-    // TODO: 주석 제거
-//    private static final String ACCESS_TOKEN_TYPE = AuthorizationExtractor.class.getSimpleName() + ".ACCESS_TOKEN_TYPE";
 
     public static String extract(HttpServletRequest request) {
         Enumeration<String> headers = request.getHeaders(AUTHORIZATION);

@@ -12,8 +12,10 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 @DisplayName("AuthService 통합 테스트")
+@Transactional
 @SpringBootTest
 class AuthServiceTest {
 
@@ -31,7 +33,7 @@ class AuthServiceTest {
         @Test
         void notFoundMemberException() {
             // given
-            LoginRequest request = new LoginRequest("testId1", "password1!");
+            LoginRequest request = new LoginRequest("testId", "password1!");
 
             // when, then
             assertThatThrownBy(() -> authService.login(request))
@@ -42,8 +44,8 @@ class AuthServiceTest {
         @Test
         void idNotMatchedException() {
             // given
-            Member member = ID_PW_Email로_회원을_생성한다("testId2", "password2!", "email2@gmail.com");
-            LoginRequest request = new LoginRequest("999id", "password2!");
+            Member member = ID_PW_Email로_회원을_생성한다("testId", "password1!", "email@gmail.com");
+            LoginRequest request = new LoginRequest("999id", "password1!");
 
             // when, then
             assertThatThrownBy(() -> authService.login(request))
@@ -54,8 +56,8 @@ class AuthServiceTest {
         @Test
         void passwordNotMatchedException() {
             // given
-            Member member = ID_PW_Email로_회원을_생성한다("testId3", "password3!", "email3@gmail.com");
-            LoginRequest request = new LoginRequest("testId3", "99password!");
+            Member member = ID_PW_Email로_회원을_생성한다("testId", "password1!", "email@gmail.com");
+            LoginRequest request = new LoginRequest("testId", "99password!");
 
             // when, then
             assertThatThrownBy(() -> authService.login(request))

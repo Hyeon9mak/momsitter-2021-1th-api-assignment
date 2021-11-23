@@ -1,11 +1,13 @@
 package com.momsitter.assignment.service;
 
+import com.momsitter.assignment.authorization.AuthMemberDto;
 import com.momsitter.assignment.authorization.JwtTokenProvider;
 import com.momsitter.assignment.controller.request.LoginRequest;
 import com.momsitter.assignment.controller.response.LoginResponse;
 import com.momsitter.assignment.domain.Id;
 import com.momsitter.assignment.domain.Member;
 import com.momsitter.assignment.domain.Password;
+import com.momsitter.assignment.exception.AuthorizationException;
 import com.momsitter.assignment.exception.LoginFailedException;
 import com.momsitter.assignment.repository.MemberRepository;
 import org.springframework.stereotype.Service;
@@ -31,5 +33,14 @@ public class AuthService {
             .orElseThrow(() -> new LoginFailedException("로그인에 실패했습니다."));
 
         return new LoginResponse(jwtTokenProvider.createToken(member.getId()));
+    }
+
+    public AuthMemberDto findAuthMemberByToken(String token) {
+        Id id = new Id(jwtTokenProvider.getPayload(token));
+
+        Member member = memberRepository.findById(id)
+            .orElseThrow(() -> new AuthorizationException("로그인 정보가 유효하지 않습니다."));
+
+        return new AuthMemberDto(member.getNumber());
     }
 }

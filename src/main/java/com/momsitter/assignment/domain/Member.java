@@ -3,12 +3,14 @@ package com.momsitter.assignment.domain;
 import com.sun.istack.NotNull;
 import java.time.LocalDate;
 import java.util.Objects;
+import javax.persistence.CascadeType;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
+import javax.persistence.OneToOne;
 
 @Entity
 public class Member {
@@ -35,6 +37,9 @@ public class Member {
 
     @Embedded
     private Email email;
+
+    @OneToOne(mappedBy = "member", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    private Sitter sitter;
 
     protected Member() {
     }
@@ -69,6 +74,11 @@ public class Member {
         this.email = email;
     }
 
+    public void getJob(Sitter sitter) {
+        this.sitter = sitter;
+        this.sitter.mappedBy(this);
+    }
+
     public Long getNumber() {
         return number;
     }
@@ -95,6 +105,10 @@ public class Member {
 
     public String getEmail() {
         return email.getValue();
+    }
+
+    public Sitter getSitter() {
+        return sitter;
     }
 
     @Override

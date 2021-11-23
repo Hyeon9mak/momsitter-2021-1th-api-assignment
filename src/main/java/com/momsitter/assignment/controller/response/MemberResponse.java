@@ -11,7 +11,6 @@ public class MemberResponse {
     private final LocalDate dateOfBirth;
     private final String gender;
     private final String id;
-    private final String password;
     private final String email;
     private final SitterInfoResponse sitterInfo;
 
@@ -21,7 +20,6 @@ public class MemberResponse {
         LocalDate dateOfBirth,
         String gender,
         String id,
-        String password,
         String email,
         SitterInfoResponse sitterInfo
     ) {
@@ -30,21 +28,19 @@ public class MemberResponse {
         this.dateOfBirth = dateOfBirth;
         this.gender = gender;
         this.id = id;
-        this.password = password;
         this.email = email;
         this.sitterInfo = sitterInfo;
     }
 
-    public static MemberResponse from(Member member, Sitter sitter) {
+    public static MemberResponse from(Member member) {
         return new MemberResponse(
             member.getNumber(),
             member.getName(),
             member.getDateOfBirth(),
             member.getGender(),
             member.getId(),
-            member.getPassword(),
             member.getEmail(),
-            SitterInfoResponse.from(sitter)
+            SitterInfoResponse.from(member.getSitter())
         );
     }
 
@@ -66,10 +62,6 @@ public class MemberResponse {
 
     public String getId() {
         return id;
-    }
-
-    public String getPassword() {
-        return password;
     }
 
     public String getEmail() {

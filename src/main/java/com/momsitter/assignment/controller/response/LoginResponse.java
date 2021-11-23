@@ -2,7 +2,10 @@ package com.momsitter.assignment.controller.response;
 
 public class LoginResponse {
 
-    private final String accessToken;
+    private String accessToken;
+
+    protected LoginResponse() {
+    }
 
     public LoginResponse(String accessToken) {
         this.accessToken = accessToken;
