@@ -9,12 +9,11 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
-import javax.persistence.Id;
 
 @Entity
 public class Member {
 
-    @Id
+    @javax.persistence.Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long number;
 
@@ -28,11 +27,11 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    @NotNull
-    private String id;
+    @Embedded
+    private Id id;
 
-    @NotNull
-    private String password;
+    @Embedded
+    private Password password;
 
     @NotNull
     private String email;
@@ -46,8 +45,8 @@ public class Member {
             new Name(name),
             new DateOfBirth(dateOfBirth),
             Gender.findByName(gender),
-            id,
-            password,
+            new Id(id),
+            new Password(password),
             email
         );
     }
@@ -57,8 +56,8 @@ public class Member {
         Name name,
         DateOfBirth dateOfBirth,
         Gender gender,
-        String id,
-        String password,
+        Id id,
+        Password password,
         String email
     ) {
         this.number = number;
@@ -87,11 +86,11 @@ public class Member {
     }
 
     public String getId() {
-        return id;
+        return id.getValue();
     }
 
     public String getPassword() {
-        return password;
+        return password.getValue();
     }
 
     public String getEmail() {
