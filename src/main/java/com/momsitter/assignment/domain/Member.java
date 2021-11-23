@@ -19,8 +19,8 @@ public class Member {
     @Embedded
     private Name name;
 
-    @NotNull
-    private LocalDate dateOfBirth;
+    @Embedded
+    private DateOfBirth dateOfBirth;
 
     @NotNull
     private String gender;
@@ -38,13 +38,13 @@ public class Member {
     }
 
     public Member(String name, LocalDate dateOfBirth, String gender, String id, String password, String email) {
-        this(null, new Name(name), dateOfBirth, gender, id, password, email);
+        this(null, new Name(name), new DateOfBirth(dateOfBirth), gender, id, password, email);
     }
 
     public Member(
         Long number,
         Name name,
-        LocalDate dateOfBirth,
+        DateOfBirth dateOfBirth,
         String gender,
         String id,
         String password,
@@ -68,7 +68,7 @@ public class Member {
     }
 
     public LocalDate getDateOfBirth() {
-        return dateOfBirth;
+        return dateOfBirth.getValue();
     }
 
     public String getGender() {
