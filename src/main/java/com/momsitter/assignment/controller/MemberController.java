@@ -2,6 +2,7 @@ package com.momsitter.assignment.controller;
 
 import com.momsitter.assignment.authorization.AuthMember;
 import com.momsitter.assignment.authorization.AuthMemberDto;
+import com.momsitter.assignment.controller.request.CreateParentRequest;
 import com.momsitter.assignment.controller.request.CreateSitterRequest;
 import com.momsitter.assignment.controller.response.MemberResponse;
 import com.momsitter.assignment.service.MemberService;
@@ -26,9 +27,16 @@ public class MemberController {
 
     @PostMapping("/sitter")
     public ResponseEntity<Void> createSitter(@Valid @RequestBody CreateSitterRequest request) {
-        MemberResponse response = memberService.createSitter(request);
+        Long memberNumber = memberService.createSitter(request);
 
-        return ResponseEntity.created(URI.create("/members/" + response.getNumber())).build();
+        return ResponseEntity.created(URI.create("/members/" + memberNumber)).build();
+    }
+
+    @PostMapping("/parent")
+    public ResponseEntity<Void> createParent(@Valid @RequestBody CreateParentRequest request) {
+        Long memberNumber = memberService.createParent(request);
+
+        return ResponseEntity.created(URI.create("/members/" + memberNumber)).build();
     }
 
     @GetMapping("/me")

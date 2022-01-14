@@ -76,7 +76,7 @@ public class Member {
         this.password = password;
         this.email = email;
     }
-    
+
     public void getJob(Sitter sitter) {
         this.sitter = sitter;
         this.sitter.mappedBy(this);

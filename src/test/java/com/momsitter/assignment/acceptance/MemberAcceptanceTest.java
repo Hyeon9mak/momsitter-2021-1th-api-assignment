@@ -5,21 +5,25 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
+import com.momsitter.assignment.controller.request.ChildInfoRequest;
+import com.momsitter.assignment.controller.request.CreateParentRequest;
 import com.momsitter.assignment.controller.request.CreateSitterRequest;
 import com.momsitter.assignment.controller.request.LoginRequest;
+import com.momsitter.assignment.controller.request.ParentInfoRequest;
 import com.momsitter.assignment.controller.request.SitterInfoRequest;
 import com.momsitter.assignment.controller.response.LoginResponse;
 import com.momsitter.assignment.exception.ExceptionResponse;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.time.LocalDate;
+import java.util.Arrays;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 @DisplayName("회원 인수 테스트")
 public class MemberAcceptanceTest extends AcceptanceTest {
 
-    @DisplayName("POST /api/members/sitter - 정상적인 경우 회원가입에 성공한다.")
+    @DisplayName("POST /api/members/sitter - 정상적인 경우 시터 회원가입에 성공한다.")
     @Test
     void createSitterSuccess() {
         // given
@@ -43,9 +47,9 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         assertThat(response.body()).isNotNull();
     }
 
-    @DisplayName("POST /api/members/sitter - 잘못된 정보가 포함될 경우 회원가입에 실패한다.")
+    @DisplayName("POST /api/members/sitter - 잘못된 정보가 포함될 경우 시터 회원가입에 실패한다.")
     @Test
-    void nameNullOrBlankException() {
+    void sitterNameNullOrBlankException() {
         // given
         SitterInfoRequest sitterInfo = new SitterInfoRequest(3, 5, "진짜 잘해요.");
         CreateSitterRequest request = new CreateSitterRequest(
@@ -60,6 +64,63 @@ public class MemberAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = postRequestWithBody("/api/members/sitter", request);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(BAD_REQUEST.value());
+        assertThat(response.as(ExceptionResponse.class)).isNotNull();
+    }
+
+    @DisplayName("POST /api/members/parent - 정상적인 경우 부모 회원가입에 성공한다.")
+    @Test
+    void createParentSuccess() {
+        // given
+        ChildInfoRequest childInfo1 = new ChildInfoRequest(LocalDate.of(2020, 1, 10), "남");
+        ChildInfoRequest childInfo2 = new ChildInfoRequest(LocalDate.of(2021, 3, 20), "여");
+        ParentInfoRequest parentInfo = new ParentInfoRequest(
+            "잘 봐주세요.",
+            Arrays.asList(childInfo1, childInfo2)
+        );
+        CreateParentRequest request = new CreateParentRequest(
+            "최현구",
+            LocalDate.now(),
+            "남",
+            "hyeon9mak",
+            "pw123!@#",
+            "email@email.com",
+            parentInfo
+        );
+
+        // when
+        ExtractableResponse<Response> response = postRequestWithBody("/api/members/parent", request);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(CREATED.value());
+        assertThat(response.header("Location")).isNotNull();
+        assertThat(response.body()).isNotNull();
+    }
+
+    @DisplayName("POST /api/members/parent - 잘못된 정보가 포함될 경우 부모 회원가입에 실패한다.")
+    @Test
+    void parentNameNullOrBlankException() {
+        // given
+        ChildInfoRequest childInfo1 = new ChildInfoRequest(LocalDate.of(2020, 1, 10), "남");
+        ChildInfoRequest childInfo2 = new ChildInfoRequest(LocalDate.of(2021, 3, 20), "여");
+        ParentInfoRequest parentInfo = new ParentInfoRequest(
+            " ",
+            Arrays.asList(childInfo1, childInfo2)
+        );
+        CreateParentRequest request = new CreateParentRequest(
+            "최현구",
+            LocalDate.now(),
+            "남",
+            "hyeon9mak",
+            "pw123!@#",
+            "email@email.com",
+            parentInfo
+        );
+
+        // when
+        ExtractableResponse<Response> response = postRequestWithBody("/api/members/parent", request);
 
         // then
         assertThat(response.statusCode()).isEqualTo(BAD_REQUEST.value());

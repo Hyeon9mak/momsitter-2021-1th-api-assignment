@@ -1,9 +1,11 @@
 package com.momsitter.assignment.service;
 
 import com.momsitter.assignment.authorization.AuthMemberDto;
+import com.momsitter.assignment.controller.request.CreateParentRequest;
 import com.momsitter.assignment.controller.request.CreateSitterRequest;
 import com.momsitter.assignment.controller.response.MemberResponse;
 import com.momsitter.assignment.domain.Member;
+import com.momsitter.assignment.domain.Parent;
 import com.momsitter.assignment.domain.Sitter;
 import com.momsitter.assignment.exception.MemberNotFoundException;
 import com.momsitter.assignment.repository.MemberRepository;
@@ -21,13 +23,23 @@ public class MemberService {
     }
 
     @Transactional
-    public MemberResponse createSitter(CreateSitterRequest request) {
+    public Long createSitter(CreateSitterRequest request) {
         Member member = request.toMember();
         Sitter sitter = request.toSitter();
 
         member.getJob(sitter);
 
-        return MemberResponse.from(memberRepository.save(member));
+        return memberRepository.save(member).getNumber();
+    }
+
+    @Transactional
+    public Long createParent(CreateParentRequest request) {
+        Member member = request.toMember();
+        Parent parent = request.toParent();
+
+        member.registration(parent);
+
+        return memberRepository.save(member).getNumber();
     }
 
     public MemberResponse findMemberInfo(AuthMemberDto authMember) {
