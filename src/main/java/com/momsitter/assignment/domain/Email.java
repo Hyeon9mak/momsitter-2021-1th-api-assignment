@@ -9,7 +9,7 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class Email {
 
-    private static final String PATTERN = "^[a-zA-Z0-9]+@[a-zA-Z0-9]+\\.[a-zA-Z]{2,3}$";
+    private static final String PATTERN = "^[a-zA-Z0-9]+@[a-zA-Z0-9]+\\.[a-zA-Z.]{2,5}$";
 
     @NotNull
     @Column(name = "email")

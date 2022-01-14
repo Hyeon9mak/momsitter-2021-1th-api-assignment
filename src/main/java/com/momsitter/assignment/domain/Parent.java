@@ -25,8 +25,8 @@ public class Parent {
     protected Parent() {
     }
 
-    public Parent(RequestInfo requestInfo) {
-        this(null, requestInfo);
+    public Parent(String requestInfo) {
+        this(null, new RequestInfo(requestInfo));
     }
 
     public Parent(Long number, RequestInfo requestInfo) {

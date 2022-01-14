@@ -41,6 +41,9 @@ public class Member {
     @OneToOne(mappedBy = "member", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private Sitter sitter;
 
+    @OneToOne(mappedBy = "member", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    private Parent parent;
+
     protected Member() {
     }
 
@@ -73,10 +76,15 @@ public class Member {
         this.password = password;
         this.email = email;
     }
-
+    
     public void getJob(Sitter sitter) {
         this.sitter = sitter;
         this.sitter.mappedBy(this);
+    }
+
+    public void registration(Parent parent) {
+        this.parent = parent;
+        this.parent.mappedBy(this);
     }
 
     public Long getNumber() {
@@ -109,6 +117,10 @@ public class Member {
 
     public Sitter getSitter() {
         return sitter;
+    }
+
+    public Parent getParent() {
+        return parent;
     }
 
     @Override
