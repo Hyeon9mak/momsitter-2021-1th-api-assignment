@@ -1,5 +1,6 @@
 package com.momsitter.assignment.service;
 
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -9,12 +10,18 @@ import com.momsitter.assignment.controller.request.CreateParentRequest;
 import com.momsitter.assignment.controller.request.CreateSitterRequest;
 import com.momsitter.assignment.controller.request.ParentInfoRequest;
 import com.momsitter.assignment.controller.request.SitterInfoRequest;
+import com.momsitter.assignment.controller.response.ChildInfoResponse;
 import com.momsitter.assignment.controller.response.MemberResponse;
+import com.momsitter.assignment.controller.response.ParentResponse;
+import com.momsitter.assignment.controller.response.SitterResponse;
 import com.momsitter.assignment.exception.MemberNotFoundException;
+import com.momsitter.assignment.repository.ChildRepository;
 import com.momsitter.assignment.repository.MemberRepository;
+import com.momsitter.assignment.repository.ParentRepository;
 import com.momsitter.assignment.repository.SitterRepository;
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -36,6 +43,12 @@ class MemberServiceTest {
     @Autowired
     private SitterRepository sitterRepository;
 
+    @Autowired
+    private ParentRepository parentRepository;
+
+    @Autowired
+    private ChildRepository childRepository;
+
     @DisplayName("모든 정보가 전달되었을 경우 시터 회원이 정상적으로 생성된다.")
     @Test
     void createSitter() {
@@ -52,10 +65,11 @@ class MemberServiceTest {
         );
 
         // when
-        Long memberNumber = memberService.createSitter(request);
+        SitterResponse response = memberService.createMemberAndAddSitterRole(request);
 
         // then
-        assertThat(memberRepository.findById(memberNumber)).isPresent();
+        assertThat(memberRepository.findById(response.getNumber())).isPresent();
+        assertThat(sitterRepository.findById(response.getSitterInfo().getNumber())).isPresent();
     }
 
     @DisplayName("모든 정보가 전달되었을 경우 부모 회원이 정상적으로 생성된다.")
@@ -79,10 +93,17 @@ class MemberServiceTest {
         );
 
         // when
-        Long memberNumber = memberService.createParent(request);
+        ParentResponse response = memberService.createMemberAndAddParentRole(request);
 
         // then
-        assertThat(memberRepository.findById(memberNumber)).isPresent();
+        assertThat(memberRepository.findById(response.getNumber())).isPresent();
+        assertThat(parentRepository.findById(response.getParentInfo().getNumber())).isPresent();
+        List<Long> childNumbers = response.getParentInfo()
+            .getChildInfos()
+            .stream()
+            .map(ChildInfoResponse::getNumber)
+            .collect(toList());
+        assertThat(childRepository.findAllById(childNumbers)).hasSize(childNumbers.size());
     }
 
     @DisplayName("회원 정보를 조회할 때")
@@ -93,8 +114,8 @@ class MemberServiceTest {
         @Test
         void success() {
             // given
-            Long memberNumber = 회원정보를_생성한다();
-            AuthMemberDto authMember = new AuthMemberDto(memberNumber);
+            SitterResponse sitterResponse = 시터_회원정보를_생성한다();
+            AuthMemberDto authMember = new AuthMemberDto(sitterResponse.getNumber());
 
             // when
             MemberResponse response = memberService.findMemberInfo(authMember);
@@ -115,7 +136,7 @@ class MemberServiceTest {
         }
     }
 
-    private Long 회원정보를_생성한다() {
+    private SitterResponse 시터_회원정보를_생성한다() {
         SitterInfoRequest sitterInfo = new SitterInfoRequest(3, 5, "진짜 잘해요.");
         CreateSitterRequest request = new CreateSitterRequest(
             "최현구",
@@ -127,6 +148,6 @@ class MemberServiceTest {
             sitterInfo
         );
 
-        return memberService.createSitter(request);
+        return memberService.createMemberAndAddSitterRole(request);
     }
 }

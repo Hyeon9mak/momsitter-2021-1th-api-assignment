@@ -31,15 +31,16 @@ public class Sitter {
     protected Sitter() {
     }
 
-    public Sitter(int minCareAge, int maxCareAge, String introduction) {
-        this(null, minCareAge, maxCareAge, new Introduction(introduction));
+    public Sitter(Member member, int minCareAge, int maxCareAge, String introduction) {
+        this(null, member, minCareAge, maxCareAge, new Introduction(introduction));
     }
 
-    public Sitter(Long number, int minCareAge, int maxCareAge, Introduction introduction) {
+    public Sitter(Long number, Member member, int minCareAge, int maxCareAge, Introduction introduction) {
         this.number = number;
         this.minCareAge = minCareAge;
         this.maxCareAge = maxCareAge;
         this.introduction = introduction;
+        this.member = member;
         validateCareAge(this.minCareAge, this.maxCareAge);
     }
 
@@ -60,10 +61,6 @@ public class Sitter {
         }
     }
 
-    public void mappedBy(Member member) {
-        this.member = member;
-    }
-
     public Long getNumber() {
         return number;
     }
@@ -78,6 +75,10 @@ public class Sitter {
 
     public String getIntroduction() {
         return introduction.getValue();
+    }
+
+    public Member getMember() {
+        return member;
     }
 
     @Override

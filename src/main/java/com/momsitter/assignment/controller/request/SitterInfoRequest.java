@@ -3,6 +3,7 @@ package com.momsitter.assignment.controller.request;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 
+
 public class SitterInfoRequest {
 
     @Min(value = 0, message = "케어 가능한 최소 연령은 음수일 수 없습니다.")

@@ -4,13 +4,18 @@ import com.momsitter.assignment.authorization.AuthMember;
 import com.momsitter.assignment.authorization.AuthMemberDto;
 import com.momsitter.assignment.controller.request.CreateParentRequest;
 import com.momsitter.assignment.controller.request.CreateSitterRequest;
+import com.momsitter.assignment.controller.request.ParentInfoRequest;
+import com.momsitter.assignment.controller.request.SitterInfoRequest;
 import com.momsitter.assignment.controller.response.MemberResponse;
+import com.momsitter.assignment.controller.response.ParentResponse;
+import com.momsitter.assignment.controller.response.SitterResponse;
 import com.momsitter.assignment.service.MemberService;
 import java.net.URI;
 import javax.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,18 +32,39 @@ public class MemberController {
 
     @PostMapping("/sitter")
     public ResponseEntity<Void> createSitter(@Valid @RequestBody CreateSitterRequest request) {
-        Long memberNumber = memberService.createSitter(request);
+        SitterResponse response = memberService.createMemberAndAddSitterRole(request);
 
-        return ResponseEntity.created(URI.create("/members/" + memberNumber)).build();
+        return ResponseEntity.created(URI.create("/members/" + response.getNumber())).build();
+    }
+
+    @PutMapping("/sitter")
+    public ResponseEntity<SitterResponse> addSitterRole(
+        @AuthMember AuthMemberDto authMember,
+        @Valid @RequestBody SitterInfoRequest request
+    ) {
+        SitterResponse response = memberService.createAndAddSitterRole(authMember.getNumber(), request);
+
+        return ResponseEntity.ok().body(response);
     }
 
     @PostMapping("/parent")
     public ResponseEntity<Void> createParent(@Valid @RequestBody CreateParentRequest request) {
-        Long memberNumber = memberService.createParent(request);
+        ParentResponse response = memberService.createMemberAndAddParentRole(request);
 
-        return ResponseEntity.created(URI.create("/members/" + memberNumber)).build();
+        return ResponseEntity.created(URI.create("/members/" + response.getNumber())).build();
     }
 
+    @PutMapping("/parent")
+    public ResponseEntity<ParentResponse> addParentRole(
+        @AuthMember AuthMemberDto authMember,
+        @Valid @RequestBody ParentInfoRequest request
+    ) {
+        ParentResponse response = memberService.createAndAddParentRole(authMember.getNumber(), request);
+
+        return ResponseEntity.ok().body(response);
+    }
+
+    // TODO: 리팩토링 대상 - 현재 비즈니스 요구사항과 맞지 않음.
     @GetMapping("/me")
     public ResponseEntity<MemberResponse> findInfoOfMine(@AuthMember AuthMemberDto authMember) {
         MemberResponse response = memberService.findMemberInfo(authMember);

@@ -25,25 +25,22 @@ public class Parent {
     protected Parent() {
     }
 
-    public Parent(String requestInfo) {
-        this(null, new RequestInfo(requestInfo));
+    public Parent(Member member, String requestInfo) {
+        this(null, member, new RequestInfo(requestInfo));
     }
 
-    public Parent(Long number, RequestInfo requestInfo) {
+    public Parent(Long number, Member member, RequestInfo requestInfo) {
         this.number = number;
-        this.requestInfo = requestInfo;
-    }
-
-    public void mappedBy(Member member) {
         this.member = member;
+        this.requestInfo = requestInfo;
     }
 
     public Long getNumber() {
         return number;
     }
 
-    public RequestInfo getRequestInfo() {
-        return requestInfo;
+    public String getRequestInfo() {
+        return requestInfo.getValue();
     }
 
     public Member getMember() {

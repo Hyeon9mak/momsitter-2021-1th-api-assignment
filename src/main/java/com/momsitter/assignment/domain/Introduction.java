@@ -12,6 +12,7 @@ public class Introduction {
     @NotNull
     @Column(name = "introduction")
     private String value;
+    // TODO: 스트링 말고 다른 자료구조로 변경
 
     protected Introduction() {
     }

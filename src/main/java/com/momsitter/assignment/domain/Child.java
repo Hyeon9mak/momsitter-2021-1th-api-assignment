@@ -1,6 +1,7 @@
 package com.momsitter.assignment.domain;
 
 import com.sun.istack.NotNull;
+import java.time.LocalDate;
 import java.util.Objects;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -32,32 +33,32 @@ public class Child {
     protected Child() {
     }
 
-    public Child(DateOfBirth dateOfBirth, Gender gender, Parent parent) {
-        this(null, dateOfBirth, gender, parent);
+    public Child(Parent parent, LocalDate dateOfBirth, String gender) {
+        this(null, parent, new DateOfBirth(dateOfBirth), Gender.findByName(gender));
     }
 
     public Child(
         Long number,
+        Parent parent,
         DateOfBirth dateOfBirth,
-        Gender gender,
-        Parent parent
+        Gender gender
     ) {
         this.number = number;
+        this.parent = parent;
         this.dateOfBirth = dateOfBirth;
         this.gender = gender;
-        this.parent = parent;
     }
 
     public Long getNumber() {
         return number;
     }
 
-    public DateOfBirth getDateOfBirth() {
-        return dateOfBirth;
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth.getValue();
     }
 
-    public Gender getGender() {
-        return gender;
+    public String getGender() {
+        return gender.name();
     }
 
     public Parent getParent() {

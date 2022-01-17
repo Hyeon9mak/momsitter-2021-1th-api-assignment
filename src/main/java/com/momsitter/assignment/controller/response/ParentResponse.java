@@ -1,9 +1,11 @@
 package com.momsitter.assignment.controller.response;
 
-import com.momsitter.assignment.domain.Member;
+import com.momsitter.assignment.domain.Child;
+import com.momsitter.assignment.domain.Parent;
 import java.time.LocalDate;
+import java.util.List;
 
-public class MemberResponse {
+public class ParentResponse {
 
     private final Long number;
     private final String name;
@@ -11,14 +13,16 @@ public class MemberResponse {
     private final String gender;
     private final String id;
     private final String email;
+    private final ParentInfoResponse parentInfo;
 
-    public MemberResponse(
+    public ParentResponse(
         Long number,
         String name,
         LocalDate dateOfBirth,
         String gender,
         String id,
-        String email
+        String email,
+        ParentInfoResponse parentInfo
     ) {
         this.number = number;
         this.name = name;
@@ -26,16 +30,18 @@ public class MemberResponse {
         this.gender = gender;
         this.id = id;
         this.email = email;
+        this.parentInfo = parentInfo;
     }
 
-    public static MemberResponse from(Member member) {
-        return new MemberResponse(
-            member.getNumber(),
-            member.getName(),
-            member.getDateOfBirth(),
-            member.getGender(),
-            member.getId(),
-            member.getEmail()
+    public static ParentResponse from(Parent parent, List<Child> children) {
+        return new ParentResponse(
+            parent.getMember().getNumber(),
+            parent.getMember().getName(),
+            parent.getMember().getDateOfBirth(),
+            parent.getMember().getGender(),
+            parent.getMember().getId(),
+            parent.getMember().getEmail(),
+            ParentInfoResponse.from(parent, children)
         );
     }
 
@@ -61,5 +67,9 @@ public class MemberResponse {
 
     public String getEmail() {
         return email;
+    }
+
+    public ParentInfoResponse getParentInfo() {
+        return parentInfo;
     }
 }
