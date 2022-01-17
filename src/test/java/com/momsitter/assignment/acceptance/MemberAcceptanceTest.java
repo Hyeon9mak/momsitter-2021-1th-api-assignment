@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 @DisplayName("회원 인수 테스트")
 public class MemberAcceptanceTest extends AcceptanceTest {
 
-    @DisplayName("POST /api/members/sitter - 정상적인 경우 시터 회원가입에 성공한다.")
+    @DisplayName("POST /api/members/create-sitter - 정상적인 경우 시터 회원가입에 성공한다.")
     @Test
     void createSitterSuccess() {
         // given
@@ -39,7 +39,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         );
 
         // when
-        ExtractableResponse<Response> response = postRequestWithBody("/api/members/sitter", request);
+        ExtractableResponse<Response> response = postRequestWithBody("/api/members/create-sitter", request);
 
         // then
         assertThat(response.statusCode()).isEqualTo(CREATED.value());
@@ -47,7 +47,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         assertThat(response.body()).isNotNull();
     }
 
-    @DisplayName("POST /api/members/sitter - 잘못된 정보가 포함될 경우 시터 회원가입에 실패한다.")
+    @DisplayName("POST /api/members/create-sitter - 잘못된 정보가 포함될 경우 시터 회원가입에 실패한다.")
     @Test
     void sitterNameNullOrBlankException() {
         // given
@@ -63,14 +63,109 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         );
 
         // when
-        ExtractableResponse<Response> response = postRequestWithBody("/api/members/sitter", request);
+        ExtractableResponse<Response> response = postRequestWithBody("/api/members/create-sitter", request);
 
         // then
         assertThat(response.statusCode()).isEqualTo(BAD_REQUEST.value());
         assertThat(response.as(ExceptionResponse.class)).isNotNull();
     }
 
-    @DisplayName("POST /api/members/parent - 정상적인 경우 부모 회원가입에 성공한다.")
+    @DisplayName("PUT /api/members/add-sitter - 정상적인 경우 멤버에게 시터역할을 부여한다.")
+    @Test
+    void memberGetSitterRole() {
+        // given
+        ChildInfoRequest childInfo1 = new ChildInfoRequest(LocalDate.of(2020, 1, 10), "남");
+        ChildInfoRequest childInfo2 = new ChildInfoRequest(LocalDate.of(2021, 3, 20), "여");
+        ParentInfoRequest parentInfo = new ParentInfoRequest(
+            "잘 봐주세요.",
+            Arrays.asList(childInfo1, childInfo2)
+        );
+        CreateParentRequest request = new CreateParentRequest(
+            "최현구",
+            LocalDate.now(),
+            "남",
+            "hyeon9mak",
+            "pw123!@#",
+            "email@email.com",
+            parentInfo
+        );
+
+        ExtractableResponse<Response> parentResponse = postRequestWithBody("/api/members/create-parent", request);
+
+        // when
+        String token = 로그인후_토큰을_발급받는다("hyeon9mak", "pw123!@#");
+        SitterInfoRequest sitterInfo = new SitterInfoRequest(3, 5, "진짜 잘해요.");
+        ExtractableResponse<Response> response = putRequestWithBodyAndToken(
+            "/api/members/add-sitter",
+            sitterInfo,
+            token
+        );
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(OK.value());
+        assertThat(response.body()).isNotNull();
+    }
+
+    @DisplayName("PUT /api/members/add-sitter - 이미 시터로 등록된 사용자의 경우 예외가 발생한다.")
+    @Test
+    void memberGetSitterRoleException() {
+        // given
+        SitterInfoRequest sitterInfo = new SitterInfoRequest(3, 5, "진짜 잘해요.");
+        CreateSitterRequest request = new CreateSitterRequest(
+            "최현구",
+            LocalDate.now(),
+            "남",
+            "hyeon9mak",
+            "pw123!@#",
+            "email@email.com",
+            sitterInfo
+        );
+
+        ExtractableResponse<Response> sitterResponse = postRequestWithBody("/api/members/create-sitter", request);
+
+        // when
+        String token = 로그인후_토큰을_발급받는다("hyeon9mak", "pw123!@#");
+        ExtractableResponse<Response> response = putRequestWithBodyAndToken(
+            "/api/members/add-sitter",
+            sitterInfo,
+            token
+        );
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(BAD_REQUEST.value());
+        assertThat(response.as(ExceptionResponse.class)).isNotNull();
+    }
+
+    @DisplayName("PUT /api/members/add-sitter - 유효하지 않은 토큰의 경우 예외가 발생한다.")
+    @Test
+    void addSitterNotFoundMemberException() {
+        // given
+        SitterInfoRequest sitterInfo = new SitterInfoRequest(3, 5, "진짜 잘해요.");
+        CreateSitterRequest request = new CreateSitterRequest(
+            "최현구",
+            LocalDate.now(),
+            "남",
+            "hyeon9mak",
+            "pw123!@#",
+            "email@email.com",
+            sitterInfo
+        );
+
+        ExtractableResponse<Response> sitterResponse = postRequestWithBody("/api/members/create-sitter", request);
+
+        // when
+        ExtractableResponse<Response> response = putRequestWithBodyAndToken(
+            "/api/members/add-sitter",
+            sitterInfo,
+            "invalid token"
+        );
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(BAD_REQUEST.value());
+        assertThat(response.as(ExceptionResponse.class)).isNotNull();
+    }
+
+    @DisplayName("POST /api/members/create-parent - 정상적인 경우 부모 회원가입에 성공한다.")
     @Test
     void createParentSuccess() {
         // given
@@ -91,7 +186,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         );
 
         // when
-        ExtractableResponse<Response> response = postRequestWithBody("/api/members/parent", request);
+        ExtractableResponse<Response> response = postRequestWithBody("/api/members/create-parent", request);
 
         // then
         assertThat(response.statusCode()).isEqualTo(CREATED.value());
@@ -99,7 +194,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         assertThat(response.body()).isNotNull();
     }
 
-    @DisplayName("POST /api/members/parent - 잘못된 정보가 포함될 경우 부모 회원가입에 실패한다.")
+    @DisplayName("POST /api/members/create-parent - 잘못된 정보가 포함될 경우 부모 회원가입에 실패한다.")
     @Test
     void parentNameNullOrBlankException() {
         // given
@@ -120,7 +215,113 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         );
 
         // when
-        ExtractableResponse<Response> response = postRequestWithBody("/api/members/parent", request);
+        ExtractableResponse<Response> response = postRequestWithBody("/api/members/create-parent", request);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(BAD_REQUEST.value());
+        assertThat(response.as(ExceptionResponse.class)).isNotNull();
+    }
+
+    @DisplayName("PUT /api/members/add-parent - 정상적인 경우 멤버에게 부모역할을 부여한다.")
+    @Test
+    void memberGetParentRole() {
+        // given
+        SitterInfoRequest sitterInfo = new SitterInfoRequest(3, 5, "진짜 잘해요.");
+        CreateSitterRequest request = new CreateSitterRequest(
+            "최현구",
+            LocalDate.now(),
+            "남",
+            "hyeon9mak",
+            "pw123!@#",
+            "email@email.com",
+            sitterInfo
+        );
+
+        ExtractableResponse<Response> parentResponse = postRequestWithBody("/api/members/create-sitter", request);
+
+        // when
+        String token = 로그인후_토큰을_발급받는다("hyeon9mak", "pw123!@#");
+        ChildInfoRequest childInfo1 = new ChildInfoRequest(LocalDate.of(2020, 1, 10), "남");
+        ChildInfoRequest childInfo2 = new ChildInfoRequest(LocalDate.of(2021, 3, 20), "여");
+        ParentInfoRequest parentInfo = new ParentInfoRequest(
+            "잘 봐주세요.",
+            Arrays.asList(childInfo1, childInfo2)
+        );
+        ExtractableResponse<Response> response = putRequestWithBodyAndToken(
+            "/api/members/add-parent",
+            parentInfo,
+            token
+        );
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(OK.value());
+        assertThat(response.body()).isNotNull();
+    }
+
+    @DisplayName("PUT /api/members/add-parent - 이미 부모로 등록된 사용자의 경우 예외가 발생한다.")
+    @Test
+    void memberPutParentRoleException() {
+        // given
+        ChildInfoRequest childInfo1 = new ChildInfoRequest(LocalDate.of(2020, 1, 10), "남");
+        ChildInfoRequest childInfo2 = new ChildInfoRequest(LocalDate.of(2021, 3, 20), "여");
+        ParentInfoRequest parentInfo = new ParentInfoRequest(
+            "잘 봐주세요.",
+            Arrays.asList(childInfo1, childInfo2)
+        );
+        CreateParentRequest request = new CreateParentRequest(
+            "최현구",
+            LocalDate.now(),
+            "남",
+            "hyeon9mak",
+            "pw123!@#",
+            "email@email.com",
+            parentInfo
+        );
+
+        ExtractableResponse<Response> parentResponse = postRequestWithBody("/api/members/create-parent", request);
+
+        // when
+        String token = 로그인후_토큰을_발급받는다("hyeon9mak", "pw123!@#");
+        ExtractableResponse<Response> response = putRequestWithBodyAndToken(
+            "/api/members/add-parent",
+            parentInfo,
+            token
+        );
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(BAD_REQUEST.value());
+        assertThat(response.as(ExceptionResponse.class)).isNotNull();
+    }
+
+    @DisplayName("PUT /api/members/add-parent - 유효하지 않은 토큰의 경우 예외가 발생한다.")
+    @Test
+    void addParentNotFoundMemberException() {
+        // given
+        ChildInfoRequest childInfo1 = new ChildInfoRequest(LocalDate.of(2020, 1, 10), "남");
+        ChildInfoRequest childInfo2 = new ChildInfoRequest(LocalDate.of(2021, 3, 20), "여");
+        ParentInfoRequest parentInfo = new ParentInfoRequest(
+            "잘 봐주세요.",
+            Arrays.asList(childInfo1, childInfo2)
+        );
+        CreateParentRequest request = new CreateParentRequest(
+            "최현구",
+            LocalDate.now(),
+            "남",
+            "hyeon9mak",
+            "pw123!@#",
+            "email@email.com",
+            parentInfo
+        );
+
+        ExtractableResponse<Response> parentResponse = postRequestWithBody("/api/members/create-parent", request);
+
+        // when
+        String token = 로그인후_토큰을_발급받는다("hyeon9mak", "pw123!@#");
+        ExtractableResponse<Response> response = putRequestWithBodyAndToken(
+            "/api/members/add-parent",
+            parentInfo,
+            token
+        );
 
         // then
         assertThat(response.statusCode()).isEqualTo(BAD_REQUEST.value());
@@ -131,7 +332,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
     @Test
     void findInfoOfMineWithToken() {
         // given
-        ID_PASSWORD로_회원가입을_진행한다("hyeon9mak", "password123!@#");
+        ID_PASSWORD로_시터_회원가입을_진행한다("hyeon9mak", "password123!@#");
         String token = 로그인후_토큰을_발급받는다("hyeon9mak", "password123!@#");
 
         // when
@@ -146,7 +347,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
     @Test
     void notFoundMemberException() {
         // given
-        ID_PASSWORD로_회원가입을_진행한다("hyeon9mak", "password123!@#");
+        ID_PASSWORD로_시터_회원가입을_진행한다("hyeon9mak", "password123!@#");
         String token = 로그인후_토큰을_발급받는다("hyeon9mak", "password123!@#");
 
         // when
@@ -157,7 +358,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         assertThat(response.as(ExceptionResponse.class)).isNotNull();
     }
 
-    private void ID_PASSWORD로_회원가입을_진행한다(String id, String password) {
+    private void ID_PASSWORD로_시터_회원가입을_진행한다(String id, String password) {
         SitterInfoRequest sitterInfo = new SitterInfoRequest(3, 5, "진짜 잘해요.");
         CreateSitterRequest request = new CreateSitterRequest(
             "최현구",
@@ -169,7 +370,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
             sitterInfo
         );
 
-        postRequestWithBody("/api/members/sitter", request);
+        postRequestWithBody("/api/members/create-sitter", request);
     }
 
     private String 로그인후_토큰을_발급받는다(String id, String password) {

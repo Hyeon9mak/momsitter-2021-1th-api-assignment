@@ -30,14 +30,14 @@ public class MemberController {
         this.memberService = memberService;
     }
 
-    @PostMapping("/sitter")
+    @PostMapping("/create-sitter")
     public ResponseEntity<Void> createSitter(@Valid @RequestBody CreateSitterRequest request) {
         SitterResponse response = memberService.createMemberAndAddSitterRole(request);
 
         return ResponseEntity.created(URI.create("/members/" + response.getNumber())).build();
     }
 
-    @PutMapping("/sitter")
+    @PutMapping("/add-sitter")
     public ResponseEntity<SitterResponse> addSitterRole(
         @AuthMember AuthMemberDto authMember,
         @Valid @RequestBody SitterInfoRequest request
@@ -47,14 +47,14 @@ public class MemberController {
         return ResponseEntity.ok().body(response);
     }
 
-    @PostMapping("/parent")
+    @PostMapping("/create-parent")
     public ResponseEntity<Void> createParent(@Valid @RequestBody CreateParentRequest request) {
         ParentResponse response = memberService.createMemberAndAddParentRole(request);
 
         return ResponseEntity.created(URI.create("/members/" + response.getNumber())).build();
     }
 
-    @PutMapping("/parent")
+    @PutMapping("/add-parent")
     public ResponseEntity<ParentResponse> addParentRole(
         @AuthMember AuthMemberDto authMember,
         @Valid @RequestBody ParentInfoRequest request

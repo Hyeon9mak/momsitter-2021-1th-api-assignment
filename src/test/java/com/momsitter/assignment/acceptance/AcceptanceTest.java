@@ -40,4 +40,19 @@ public class AcceptanceTest {
             .then().log().all()
             .extract();
     }
+
+    protected ExtractableResponse<Response> putRequestWithBodyAndToken(
+        String path,
+        Object object,
+        String token
+    ) {
+        return RestAssured.given()
+            .log().all()
+            .auth().oauth2(token)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body(object)
+            .when().put(path)
+            .then().log().all()
+            .extract();
+    }
 }

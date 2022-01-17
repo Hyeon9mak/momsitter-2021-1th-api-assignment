@@ -13,6 +13,8 @@ import com.momsitter.assignment.domain.Child;
 import com.momsitter.assignment.domain.Member;
 import com.momsitter.assignment.domain.Parent;
 import com.momsitter.assignment.domain.Sitter;
+import com.momsitter.assignment.exception.AlreadyParentMemberException;
+import com.momsitter.assignment.exception.AlreadySitterMemberException;
 import com.momsitter.assignment.exception.MemberNotFoundException;
 import com.momsitter.assignment.repository.ChildRepository;
 import com.momsitter.assignment.repository.MemberRepository;
@@ -52,10 +54,10 @@ public class MemberService {
         return createAndAddSitterRole(member.getNumber(), request.getSitterInfo());
     }
 
-    // TODO: 테스트 코드 작성
     @Transactional
     public SitterResponse createAndAddSitterRole(Long memberNumber, SitterInfoRequest request) {
         Member member = findByNumber(memberNumber);
+        validateAlreadySitterMember(member);
         Sitter sitter = sitterRepository.save(new Sitter(
             member,
             request.getMinCareAge(),
@@ -66,6 +68,14 @@ public class MemberService {
         return SitterResponse.from(sitter);
     }
 
+    private void validateAlreadySitterMember(Member member) {
+        if (sitterRepository.findByMember(member).isPresent()) {
+            throw new AlreadySitterMemberException(
+                String.format("%s 사용자는 이미 시터로 등록되어 있습니다.", member.getNumber())
+            );
+        }
+    }
+
     @Transactional
     public ParentResponse createMemberAndAddParentRole(CreateParentRequest request) {
         Member member = memberRepository.save(request.toMember());
@@ -73,14 +83,22 @@ public class MemberService {
         return createAndAddParentRole(member.getNumber(), request.getParentInfo());
     }
 
-    // TODO: 테스트 코드 작성
     @Transactional
     public ParentResponse createAndAddParentRole(Long memberNumber, ParentInfoRequest request) {
         Member member = findByNumber(memberNumber);
+        validateAlreadyParentMember(member);
         Parent parent = parentRepository.save(new Parent(member, request.getRequestInfo()));
         List<Child> children = childRepository.saveAll(parseChildren(parent, request.getChildInfos()));
 
         return ParentResponse.from(parent, children);
+    }
+
+    private void validateAlreadyParentMember(Member member) {
+        if (parentRepository.findByMember(member).isPresent()) {
+            throw new AlreadyParentMemberException(
+                String.format("%s 사용자는 이미 부모로 등록되어 있습니다.", member.getNumber())
+            );
+        }
     }
 
     private List<Child> parseChildren(Parent parent, List<ChildInfoRequest> childInfos) {

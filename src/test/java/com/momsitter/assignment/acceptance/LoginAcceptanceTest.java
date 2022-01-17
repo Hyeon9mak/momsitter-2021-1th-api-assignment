@@ -59,6 +59,6 @@ public class LoginAcceptanceTest extends AcceptanceTest {
             sitterInfo
         );
 
-        postRequestWithBody("/api/members/sitter", request);
+        postRequestWithBody("/api/members/create-sitter", request);
     }
 }

@@ -14,6 +14,8 @@ import com.momsitter.assignment.controller.response.ChildInfoResponse;
 import com.momsitter.assignment.controller.response.MemberResponse;
 import com.momsitter.assignment.controller.response.ParentResponse;
 import com.momsitter.assignment.controller.response.SitterResponse;
+import com.momsitter.assignment.exception.AlreadyParentMemberException;
+import com.momsitter.assignment.exception.AlreadySitterMemberException;
 import com.momsitter.assignment.exception.MemberNotFoundException;
 import com.momsitter.assignment.repository.ChildRepository;
 import com.momsitter.assignment.repository.MemberRepository;
@@ -106,6 +108,94 @@ class MemberServiceTest {
         assertThat(childRepository.findAllById(childNumbers)).hasSize(childNumbers.size());
     }
 
+    @DisplayName("회원에 시터 역할을 추가할 때")
+    @Nested
+    class AddSitterRole {
+
+        @DisplayName("시터 정보가 모두 전달되었을 경우 정상적으로 추가된다.")
+        @Test
+        void success() {
+            // given
+            ParentResponse parentResponse = 부모_회원정보를_생성한다();
+
+            // when
+            SitterInfoRequest sitterInfo = new SitterInfoRequest(3, 5, "진짜 잘해요.");
+            SitterResponse response = memberService.createAndAddSitterRole(
+                parentResponse.getNumber(),
+                sitterInfo
+            );
+
+            // then
+            assertThat(response.getNumber()).isEqualTo(parentResponse.getNumber());
+            assertThat(response.getSitterInfo()).usingRecursiveComparison()
+                .ignoringFields("number")
+                .isEqualTo(sitterInfo);
+        }
+
+        @DisplayName("이미 시터로 등록된 회원일 경우 예외가 발생한다.")
+        @Test
+        void alreadySitterMember() {
+            // given
+            SitterResponse sitterResponse = 시터_회원정보를_생성한다();
+            SitterInfoRequest sitterInfo = new SitterInfoRequest(3, 5, "진짜 잘해요.");
+
+            // when, then
+            assertThatThrownBy(() -> memberService.createAndAddSitterRole(
+                sitterResponse.getNumber(),
+                sitterInfo
+            )).isExactlyInstanceOf(AlreadySitterMemberException.class);
+        }
+    }
+
+    @DisplayName("회원에 부모 역할을 추가할 때")
+    @Nested
+    class AddParentRole {
+
+        @DisplayName("부모 정보가 모두 전달되었을 경우 정상적으로 추가된다.")
+        @Test
+        void success() {
+            // given
+            SitterResponse sitterResponse = 시터_회원정보를_생성한다();
+
+            // when
+            ChildInfoRequest childInfo1 = new ChildInfoRequest(LocalDate.of(2020, 1, 10), "남");
+            ChildInfoRequest childInfo2 = new ChildInfoRequest(LocalDate.of(2021, 3, 20), "여");
+            ParentInfoRequest parentInfo = new ParentInfoRequest(
+                "잘 봐주세요.",
+                Arrays.asList(childInfo1, childInfo2)
+            );
+
+            ParentResponse response = memberService.createAndAddParentRole(
+                sitterResponse.getNumber(),
+                parentInfo
+            );
+
+            // then
+            assertThat(response.getNumber()).isEqualTo(sitterResponse.getNumber());
+            assertThat(response.getParentInfo().getRequestInfo()).isEqualTo(parentInfo.getRequestInfo());
+            assertThat(response.getParentInfo().getChildInfos()).hasSize(parentInfo.getChildInfos().size());
+        }
+
+        @DisplayName("이미 부모로 등록된 회원일 경우 예외가 발생한다.")
+        @Test
+        void alreadySitterMember() {
+            // given
+            ParentResponse parentResponse = 부모_회원정보를_생성한다();
+            ChildInfoRequest childInfo1 = new ChildInfoRequest(LocalDate.of(2020, 1, 10), "남");
+            ChildInfoRequest childInfo2 = new ChildInfoRequest(LocalDate.of(2021, 3, 20), "여");
+            ParentInfoRequest parentInfo = new ParentInfoRequest(
+                "잘 봐주세요.",
+                Arrays.asList(childInfo1, childInfo2)
+            );
+
+            // when, then
+            assertThatThrownBy(() -> memberService.createAndAddParentRole(
+                parentResponse.getNumber(),
+                parentInfo
+            )).isExactlyInstanceOf(AlreadyParentMemberException.class);
+        }
+    }
+
     @DisplayName("회원 정보를 조회할 때")
     @Nested
     class MemberInfo {
@@ -149,5 +239,25 @@ class MemberServiceTest {
         );
 
         return memberService.createMemberAndAddSitterRole(request);
+    }
+
+    private ParentResponse 부모_회원정보를_생성한다() {
+        ChildInfoRequest childInfo1 = new ChildInfoRequest(LocalDate.of(2020, 1, 10), "남");
+        ChildInfoRequest childInfo2 = new ChildInfoRequest(LocalDate.of(2021, 3, 20), "여");
+        ParentInfoRequest parentInfo = new ParentInfoRequest(
+            "잘 봐주세요.",
+            Arrays.asList(childInfo1, childInfo2)
+        );
+        CreateParentRequest request = new CreateParentRequest(
+            "최현구",
+            LocalDate.now(),
+            "남",
+            "hyeon9mak",
+            "pw123!@#",
+            "email@email.com",
+            parentInfo
+        );
+
+        return memberService.createMemberAndAddParentRole(request);
     }
 }

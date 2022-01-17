@@ -38,7 +38,9 @@ public class AuthorizationConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(authorizationInterceptor)
-            .addPathPatterns("/api/members/me");
+            .addPathPatterns("/api/members/me")
+            .addPathPatterns("/api/members/add-sitter")
+            .addPathPatterns("/api/members/add-parent");
     }
 
     @Override
