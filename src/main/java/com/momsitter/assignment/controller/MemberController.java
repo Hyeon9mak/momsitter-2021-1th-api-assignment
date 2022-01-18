@@ -44,7 +44,7 @@ public class MemberController {
     ) {
         SitterResponse response = memberService.createAndAddSitterRole(authMember.getNumber(), request);
 
-        return ResponseEntity.ok().body(response);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/create-parent")
@@ -61,13 +61,13 @@ public class MemberController {
     ) {
         ParentResponse response = memberService.createAndAddParentRole(authMember.getNumber(), request);
 
-        return ResponseEntity.ok().body(response);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/me")
     public ResponseEntity<MemberResponse> findInfoOfMine(@AuthMember AuthMemberDto authMember) {
         MemberResponse response = memberService.findMemberInfo(authMember.getNumber());
 
-        return ResponseEntity.ok().body(response);
+        return ResponseEntity.ok(response);
     }
 }

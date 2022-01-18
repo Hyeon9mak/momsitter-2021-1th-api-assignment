@@ -22,6 +22,6 @@ public class LoginController {
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
         LoginResponse token = authService.login(request);
 
-        return ResponseEntity.ok().body(token);
+        return ResponseEntity.ok(token);
     }
 }
