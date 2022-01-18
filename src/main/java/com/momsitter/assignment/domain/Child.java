@@ -33,20 +33,22 @@ public class Child {
     protected Child() {
     }
 
-    public Child(Parent parent, LocalDate dateOfBirth, String gender) {
-        this(null, parent, new DateOfBirth(dateOfBirth), Gender.findByName(gender));
+    public Child(LocalDate dateOfBirth, String gender) {
+        this(null, new DateOfBirth(dateOfBirth), Gender.findByName(gender));
     }
 
     public Child(
         Long number,
-        Parent parent,
         DateOfBirth dateOfBirth,
         Gender gender
     ) {
         this.number = number;
-        this.parent = parent;
         this.dateOfBirth = dateOfBirth;
         this.gender = gender;
+    }
+
+    public void matchParent(Parent parent) {
+        this.parent = parent;
     }
 
     public Long getNumber() {

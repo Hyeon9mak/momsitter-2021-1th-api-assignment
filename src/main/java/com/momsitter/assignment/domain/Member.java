@@ -1,14 +1,20 @@
 package com.momsitter.assignment.domain;
 
+import com.momsitter.assignment.exception.AlreadyParentMemberException;
+import com.momsitter.assignment.exception.AlreadySitterMemberException;
 import com.sun.istack.NotNull;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
+import javax.persistence.CascadeType;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
+import javax.persistence.OneToOne;
 
 @Entity
 public class Member {
@@ -35,6 +41,12 @@ public class Member {
 
     @Embedded
     private Email email;
+
+    @OneToOne(mappedBy = "member", cascade = CascadeType.PERSIST, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Sitter sitter;
+
+    @OneToOne(mappedBy = "member", cascade = CascadeType.PERSIST, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Parent parent;
 
     protected Member() {
     }
@@ -69,6 +81,44 @@ public class Member {
         this.email = email;
     }
 
+    public void addRole(Sitter sitter) {
+        if (Objects.nonNull(this.sitter)) {
+            throw new AlreadySitterMemberException(
+                String.format("%s 회원은 이미 시터로 등록된 회원입니다.", getNumber())
+            );
+        }
+
+        this.sitter = sitter;
+        this.sitter.mappedBy(this);
+    }
+
+    public void addRole(Parent parent) {
+        if (Objects.nonNull(this.parent)) {
+            throw new AlreadyParentMemberException(
+                String.format("%s 회원은 이미 부모로 등록된 회원입니다.", getNumber())
+            );
+        }
+
+        this.parent = parent;
+        this.parent.mappedBy(this);
+    }
+
+    public boolean isSitter() {
+        return Objects.nonNull(sitter);
+    }
+
+    public boolean isNotSitter() {
+        return !isSitter();
+    }
+
+    public boolean isParent() {
+        return Objects.nonNull(parent);
+    }
+
+    public boolean isNotParent() {
+        return !isParent();
+    }
+
     public Long getNumber() {
         return number;
     }
@@ -93,8 +143,24 @@ public class Member {
         return password.getValue();
     }
 
-    public String getEmail() {
+    public Email getEmail() {
+        return email;
+    }
+
+    public String getEmailValue() {
         return email.getValue();
+    }
+
+    public Sitter getSitter() {
+        return sitter;
+    }
+
+    public Parent getParent() {
+        return parent;
+    }
+
+    public List<Child> getChildren() {
+        return parent.getChildren();
     }
 
     @Override

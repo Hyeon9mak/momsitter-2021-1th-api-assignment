@@ -1,6 +1,7 @@
 package com.momsitter.assignment.controller.response;
 
 import com.momsitter.assignment.domain.Child;
+import com.momsitter.assignment.domain.Member;
 import com.momsitter.assignment.domain.Parent;
 import java.time.LocalDate;
 import java.util.List;
@@ -33,15 +34,15 @@ public class ParentResponse {
         this.parentInfo = parentInfo;
     }
 
-    public static ParentResponse from(Parent parent, List<Child> children) {
+    public static ParentResponse from(Member member) {
         return new ParentResponse(
-            parent.getMember().getNumber(),
-            parent.getMember().getName(),
-            parent.getMember().getDateOfBirth(),
-            parent.getMember().getGender(),
-            parent.getMember().getId(),
-            parent.getMember().getEmail(),
-            ParentInfoResponse.from(parent, children)
+            member.getNumber(),
+            member.getName(),
+            member.getDateOfBirth(),
+            member.getGender(),
+            member.getId(),
+            member.getEmailValue(),
+            ParentInfoResponse.from(member.getParent(), member.getChildren())
         );
     }
 

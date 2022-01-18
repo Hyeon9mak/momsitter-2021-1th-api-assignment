@@ -1,5 +1,6 @@
 package com.momsitter.assignment.controller.request;
 
+import com.momsitter.assignment.domain.Sitter;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 
@@ -22,6 +23,10 @@ public class SitterInfoRequest {
         this.minCareAge = minCareAge;
         this.maxCareAge = maxCareAge;
         this.introduction = introduction;
+    }
+
+    public Sitter toSitter() {
+        return new Sitter(minCareAge, maxCareAge, introduction);
     }
 
     public int getMinCareAge() {

@@ -22,10 +22,10 @@ class SitterTest {
             Member member = 멤버를_생성한다();
 
             // when, then
-            assertThatThrownBy(() -> new Sitter(member, -1, 10, "잘해요."))
+            assertThatThrownBy(() -> new Sitter(-1, 10, "잘해요."))
                 .isExactlyInstanceOf(InvalidCareAgeException.class);
 
-            assertThatThrownBy(() -> new Sitter(member, 3, -1, "잘해요."))
+            assertThatThrownBy(() -> new Sitter(3, -1, "잘해요."))
                 .isExactlyInstanceOf(InvalidCareAgeException.class);
         }
 
@@ -36,7 +36,7 @@ class SitterTest {
             Member member = 멤버를_생성한다();
 
             // when, then
-            assertThatThrownBy(() -> new Sitter(member, 5, 4, "잘해요."))
+            assertThatThrownBy(() -> new Sitter(5, 4, "잘해요."))
                 .isExactlyInstanceOf(InvalidCareAgeException.class);
         }
     }

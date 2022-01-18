@@ -1,7 +1,10 @@
 package com.momsitter.assignment.controller.request;
 
+import com.momsitter.assignment.domain.Child;
 import com.momsitter.assignment.domain.Member;
+import com.momsitter.assignment.domain.Parent;
 import java.time.LocalDate;
+import java.util.List;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -60,6 +63,14 @@ public class CreateParentRequest {
             password,
             email
         );
+    }
+
+    public Parent toParent() {
+        return parentInfo.toParent();
+    }
+
+    public List<Child> toChildren() {
+        return parentInfo.toChildren();
     }
 
     public String getName() {

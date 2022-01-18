@@ -23,10 +23,12 @@ class MemberTest {
         );
 
         // when
-        Sitter sitter = new Sitter(member, 3, 5, "잘해요");
+        Sitter sitter = new Sitter(3, 5, "잘해요");
+        member.addRole(sitter);
 
         // then
         assertThat(sitter.getMember()).isEqualTo(member);
+        assertThat(member.getSitter()).isEqualTo(sitter);
     }
 
     @DisplayName("Member가 Parent로 등록된다.")
@@ -43,10 +45,12 @@ class MemberTest {
         );
 
         // when
-        Parent parent = new Parent(member, "잘 돌봐주세요");
+        Parent parent = new Parent("잘 돌봐주세요");
+        member.addRole(parent);
 
         // then
         assertThat(parent.getMember()).isEqualTo(member);
+        assertThat(member.getParent()).isEqualTo(parent);
     }
 
     @DisplayName("Member가 Sitter와 Parent로 동시에 등록될 수 있다.")
@@ -63,10 +67,14 @@ class MemberTest {
         );
 
         // when
-        Sitter sitter = new Sitter(member, 3, 5, "잘해요");
-        Parent parent = new Parent(member, "잘 돌봐주세요");
+        Sitter sitter = new Sitter(3, 5, "잘해요");
+        Parent parent = new Parent("잘 돌봐주세요");
+        member.addRole(sitter);
+        member.addRole(parent);
 
         // then
+        assertThat(member.getSitter()).isEqualTo(sitter);
+        assertThat(member.getParent()).isEqualTo(parent);
         assertThat(sitter.getMember()).isEqualTo(member);
         assertThat(parent.getMember()).isEqualTo(member);
     }

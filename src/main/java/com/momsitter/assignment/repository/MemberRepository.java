@@ -1,5 +1,6 @@
 package com.momsitter.assignment.repository;
 
+import com.momsitter.assignment.domain.Email;
 import com.momsitter.assignment.domain.Id;
 import com.momsitter.assignment.domain.Member;
 import com.momsitter.assignment.domain.Password;
@@ -13,4 +14,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findById(Id id);
 
     Optional<Member> findByNumber(Long number);
+
+    Optional<Member> findByEmail(Email email);
 }

@@ -1,5 +1,6 @@
 package com.momsitter.assignment.controller.request;
 
+import com.momsitter.assignment.domain.Child;
 import java.time.LocalDate;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -18,6 +19,10 @@ public class ChildInfoRequest {
     public ChildInfoRequest(LocalDate dateOfBirth, String gender) {
         this.dateOfBirth = dateOfBirth;
         this.gender = gender;
+    }
+
+    public Child toChild() {
+        return new Child(dateOfBirth, gender);
     }
 
     public LocalDate getDateOfBirth() {

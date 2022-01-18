@@ -31,16 +31,15 @@ public class Sitter {
     protected Sitter() {
     }
 
-    public Sitter(Member member, int minCareAge, int maxCareAge, String introduction) {
-        this(null, member, minCareAge, maxCareAge, new Introduction(introduction));
+    public Sitter(int minCareAge, int maxCareAge, String introduction) {
+        this(null, minCareAge, maxCareAge, new Introduction(introduction));
     }
 
-    public Sitter(Long number, Member member, int minCareAge, int maxCareAge, Introduction introduction) {
+    public Sitter(Long number, int minCareAge, int maxCareAge, Introduction introduction) {
         this.number = number;
         this.minCareAge = minCareAge;
         this.maxCareAge = maxCareAge;
         this.introduction = introduction;
-        this.member = member;
         validateCareAge(this.minCareAge, this.maxCareAge);
     }
 
@@ -59,6 +58,10 @@ public class Sitter {
         if (careAge < 0) {
             throw new InvalidCareAgeException(String.format("케어 가능 연령 %d는 음수일 수 없습니다.", careAge));
         }
+    }
+
+    public void mappedBy(Member member) {
+        this.member = member;
     }
 
     public Long getNumber() {

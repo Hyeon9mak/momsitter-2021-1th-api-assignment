@@ -1,6 +1,5 @@
 package com.momsitter.assignment.service;
 
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -10,20 +9,17 @@ import com.momsitter.assignment.controller.request.CreateParentRequest;
 import com.momsitter.assignment.controller.request.CreateSitterRequest;
 import com.momsitter.assignment.controller.request.ParentInfoRequest;
 import com.momsitter.assignment.controller.request.SitterInfoRequest;
-import com.momsitter.assignment.controller.response.ChildInfoResponse;
 import com.momsitter.assignment.controller.response.MemberResponse;
 import com.momsitter.assignment.controller.response.ParentResponse;
 import com.momsitter.assignment.controller.response.SitterResponse;
+import com.momsitter.assignment.domain.Member;
 import com.momsitter.assignment.exception.AlreadyParentMemberException;
 import com.momsitter.assignment.exception.AlreadySitterMemberException;
 import com.momsitter.assignment.exception.MemberNotFoundException;
-import com.momsitter.assignment.repository.ChildRepository;
 import com.momsitter.assignment.repository.MemberRepository;
-import com.momsitter.assignment.repository.ParentRepository;
-import com.momsitter.assignment.repository.SitterRepository;
 import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -41,15 +37,6 @@ class MemberServiceTest {
 
     @Autowired
     private MemberRepository memberRepository;
-
-    @Autowired
-    private SitterRepository sitterRepository;
-
-    @Autowired
-    private ParentRepository parentRepository;
-
-    @Autowired
-    private ChildRepository childRepository;
 
     @DisplayName("모든 정보가 전달되었을 경우 시터 회원이 정상적으로 생성된다.")
     @Test
@@ -70,8 +57,9 @@ class MemberServiceTest {
         SitterResponse response = memberService.createMemberAndAddSitterRole(request);
 
         // then
-        assertThat(memberRepository.findById(response.getNumber())).isPresent();
-        assertThat(sitterRepository.findById(response.getSitterInfo().getNumber())).isPresent();
+        Optional<Member> member = memberRepository.findById(response.getNumber());
+        assertThat(member).isPresent();
+        assertThat(member.get().isSitter()).isTrue();
     }
 
     @DisplayName("모든 정보가 전달되었을 경우 부모 회원이 정상적으로 생성된다.")
@@ -98,14 +86,9 @@ class MemberServiceTest {
         ParentResponse response = memberService.createMemberAndAddParentRole(request);
 
         // then
-        assertThat(memberRepository.findById(response.getNumber())).isPresent();
-        assertThat(parentRepository.findById(response.getParentInfo().getNumber())).isPresent();
-        List<Long> childNumbers = response.getParentInfo()
-            .getChildInfos()
-            .stream()
-            .map(ChildInfoResponse::getNumber)
-            .collect(toList());
-        assertThat(childRepository.findAllById(childNumbers)).hasSize(childNumbers.size());
+        Optional<Member> member = memberRepository.findById(response.getNumber());
+        assertThat(member).isPresent();
+        assertThat(member.get().isParent()).isTrue();
     }
 
     @DisplayName("회원에 시터 역할을 추가할 때")
@@ -208,7 +191,7 @@ class MemberServiceTest {
             AuthMemberDto authMember = new AuthMemberDto(sitterResponse.getNumber());
 
             // when
-            MemberResponse response = memberService.findMemberInfo(authMember);
+            MemberResponse response = memberService.findMemberInfo(authMember.getNumber());
 
             // then
             assertThat(memberRepository.findById(response.getNumber())).isPresent();
@@ -221,8 +204,54 @@ class MemberServiceTest {
             AuthMemberDto authMember = new AuthMemberDto(Long.MAX_VALUE);
 
             // when, then
-            assertThatThrownBy(() -> memberService.findMemberInfo(authMember))
+            assertThatThrownBy(() -> memberService.findMemberInfo(authMember.getNumber()))
                 .isExactlyInstanceOf(MemberNotFoundException.class);
+        }
+
+        @DisplayName("시터로만 가입한 회원은 시터 정보만 반환된다.")
+        @Test
+        void onlySitter() {
+            // given
+            SitterResponse sitterResponse = 시터_회원정보를_생성한다();
+            AuthMemberDto authMember = new AuthMemberDto(sitterResponse.getNumber());
+
+            // when
+            MemberResponse memberResponse = memberService.findMemberInfo(authMember.getNumber());
+
+            // then
+            assertThat(memberResponse.getSitterInfo()).isNotNull();
+            assertThat(memberResponse.getParentInfo()).isNull();
+        }
+
+        @DisplayName("부모로만 가입한 회원은 부모 정보만 반환된다.")
+        @Test
+        void onlyParent() {
+            // given
+            ParentResponse parentResponse = 부모_회원정보를_생성한다();
+            AuthMemberDto authMember = new AuthMemberDto(parentResponse.getNumber());
+
+            // when
+            MemberResponse memberResponse = memberService.findMemberInfo(authMember.getNumber());
+
+            // then
+            assertThat(memberResponse.getSitterInfo()).isNull();
+            assertThat(memberResponse.getParentInfo()).isNotNull();
+        }
+
+        @DisplayName("시터와 부모로 모두 가입한 회원은 모든 정보가 반환된다.")
+        @Test
+        void all() {
+            // given
+            SitterResponse sitterResponse = 시터_회원정보를_생성한다();
+            ParentResponse parentResponse = 부모_역할을_추가한다(sitterResponse.getNumber());
+            AuthMemberDto authMember = new AuthMemberDto(parentResponse.getNumber());
+
+            // when
+            MemberResponse memberResponse = memberService.findMemberInfo(authMember.getNumber());
+
+            // then
+            assertThat(memberResponse.getSitterInfo()).isNotNull();
+            assertThat(memberResponse.getParentInfo()).isNotNull();
         }
     }
 
@@ -259,5 +288,16 @@ class MemberServiceTest {
         );
 
         return memberService.createMemberAndAddParentRole(request);
+    }
+
+    private ParentResponse 부모_역할을_추가한다(Long memberNumber) {
+        ChildInfoRequest childInfo1 = new ChildInfoRequest(LocalDate.of(2020, 1, 10), "남");
+        ChildInfoRequest childInfo2 = new ChildInfoRequest(LocalDate.of(2021, 3, 20), "여");
+        ParentInfoRequest parentInfo = new ParentInfoRequest(
+            "잘 봐주세요.",
+            Arrays.asList(childInfo1, childInfo2)
+        );
+
+        return memberService.createAndAddParentRole(memberNumber, parentInfo);
     }
 }

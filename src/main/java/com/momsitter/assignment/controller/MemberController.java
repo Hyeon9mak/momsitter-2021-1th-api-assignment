@@ -64,10 +64,9 @@ public class MemberController {
         return ResponseEntity.ok().body(response);
     }
 
-    // TODO: 리팩토링 대상 - 현재 비즈니스 요구사항과 맞지 않음.
     @GetMapping("/me")
     public ResponseEntity<MemberResponse> findInfoOfMine(@AuthMember AuthMemberDto authMember) {
-        MemberResponse response = memberService.findMemberInfo(authMember);
+        MemberResponse response = memberService.findMemberInfo(authMember.getNumber());
 
         return ResponseEntity.ok().body(response);
     }

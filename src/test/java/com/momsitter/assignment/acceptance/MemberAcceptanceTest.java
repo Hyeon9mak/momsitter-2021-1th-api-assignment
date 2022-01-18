@@ -12,6 +12,7 @@ import com.momsitter.assignment.controller.request.LoginRequest;
 import com.momsitter.assignment.controller.request.ParentInfoRequest;
 import com.momsitter.assignment.controller.request.SitterInfoRequest;
 import com.momsitter.assignment.controller.response.LoginResponse;
+import com.momsitter.assignment.controller.response.MemberResponse;
 import com.momsitter.assignment.exception.ExceptionResponse;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -358,6 +359,57 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         assertThat(response.as(ExceptionResponse.class)).isNotNull();
     }
 
+    @DisplayName("GET /api/members/me - 시터로만 가입한 회원은 시터 정보만 조회가 가능하다.")
+    @Test
+    void onlySitter() {
+        // given
+        ID_PASSWORD로_시터_회원가입을_진행한다("hyeon9mak", "password123!@#");
+        String token = 로그인후_토큰을_발급받는다("hyeon9mak", "password123!@#");
+
+        // when
+        ExtractableResponse<Response> response = getRequestWithToken("/api/members/me", token);
+        MemberResponse memberResponse = response.as(MemberResponse.class);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(OK.value());
+        assertThat(memberResponse.getSitterInfo()).isNotNull();
+        assertThat(memberResponse.getParentInfo()).isNull();
+    }
+
+    @DisplayName("GET /api/members/me - 부모로만 가입한 회원은 부모 정보만 조회가 가능하다.")
+    @Test
+    void onlyParent() {
+        // given
+        ID_PASSWORD로_부모_회원가입을_진행한다("hyeon9mak", "password123!@#");
+        String token = 로그인후_토큰을_발급받는다("hyeon9mak", "password123!@#");
+
+        // when
+        ExtractableResponse<Response> response = getRequestWithToken("/api/members/me", token);
+        MemberResponse memberResponse = response.as(MemberResponse.class);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(OK.value());
+        assertThat(memberResponse.getSitterInfo()).isNull();
+        assertThat(memberResponse.getParentInfo()).isNotNull();
+    }
+
+    @DisplayName("GET /api/members/me - 시터와 부모로 가입한 회원은 모든 정보 조회가 가능하다.")
+    @Test
+    void all() {
+        ID_PASSWORD로_시터_회원가입을_진행한다("hyeon9mak", "password123!@#");
+        String token = 로그인후_토큰을_발급받는다("hyeon9mak", "password123!@#");
+        토큰과_함께_부모역할을_추가한다(token);
+
+        // when
+        ExtractableResponse<Response> response = getRequestWithToken("/api/members/me", token);
+        MemberResponse memberResponse = response.as(MemberResponse.class);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(OK.value());
+        assertThat(memberResponse.getSitterInfo()).isNotNull();
+        assertThat(memberResponse.getParentInfo()).isNotNull();
+    }
+
     private void ID_PASSWORD로_시터_회원가입을_진행한다(String id, String password) {
         SitterInfoRequest sitterInfo = new SitterInfoRequest(3, 5, "진짜 잘해요.");
         CreateSitterRequest request = new CreateSitterRequest(
@@ -371,6 +423,37 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         );
 
         postRequestWithBody("/api/members/create-sitter", request);
+    }
+
+    private void ID_PASSWORD로_부모_회원가입을_진행한다(String id, String password) {
+        ChildInfoRequest childInfo1 = new ChildInfoRequest(LocalDate.of(2020, 1, 10), "남");
+        ChildInfoRequest childInfo2 = new ChildInfoRequest(LocalDate.of(2021, 3, 20), "여");
+        ParentInfoRequest parentInfo = new ParentInfoRequest(
+            "잘 봐주세요.",
+            Arrays.asList(childInfo1, childInfo2)
+        );
+        CreateParentRequest request = new CreateParentRequest(
+            "최현구",
+            LocalDate.now(),
+            "남",
+            id,
+            password,
+            "email@email.com",
+            parentInfo
+        );
+
+        postRequestWithBody("/api/members/create-parent", request);
+    }
+
+    private void 토큰과_함께_부모역할을_추가한다(String token) {
+        ChildInfoRequest childInfo1 = new ChildInfoRequest(LocalDate.of(2020, 1, 10), "남");
+        ChildInfoRequest childInfo2 = new ChildInfoRequest(LocalDate.of(2021, 3, 20), "여");
+        ParentInfoRequest parentInfo = new ParentInfoRequest(
+            "잘 봐주세요.",
+            Arrays.asList(childInfo1, childInfo2)
+        );
+
+        putRequestWithBodyAndToken("/api/members/add-parent", parentInfo, token);
     }
 
     private String 로그인후_토큰을_발급받는다(String id, String password) {

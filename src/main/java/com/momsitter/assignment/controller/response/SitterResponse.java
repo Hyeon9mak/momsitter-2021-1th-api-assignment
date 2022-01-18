@@ -1,6 +1,6 @@
 package com.momsitter.assignment.controller.response;
 
-import com.momsitter.assignment.domain.Sitter;
+import com.momsitter.assignment.domain.Member;
 import java.time.LocalDate;
 
 public class SitterResponse {
@@ -31,15 +31,15 @@ public class SitterResponse {
         this.sitterInfo = sitterInfo;
     }
 
-    public static SitterResponse from(Sitter sitter) {
+    public static SitterResponse from(Member member) {
         return new SitterResponse(
-            sitter.getMember().getNumber(),
-            sitter.getMember().getName(),
-            sitter.getMember().getDateOfBirth(),
-            sitter.getMember().getGender(),
-            sitter.getMember().getId(),
-            sitter.getMember().getEmail(),
-            SitterInfoResponse.from(sitter)
+            member.getNumber(),
+            member.getName(),
+            member.getDateOfBirth(),
+            member.getGender(),
+            member.getId(),
+            member.getEmailValue(),
+            SitterInfoResponse.from(member.getSitter())
         );
     }
 

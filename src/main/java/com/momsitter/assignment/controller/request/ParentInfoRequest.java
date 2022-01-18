@@ -1,6 +1,11 @@
 package com.momsitter.assignment.controller.request;
 
+import static java.util.stream.Collectors.toList;
+
+import com.momsitter.assignment.domain.Child;
+import com.momsitter.assignment.domain.Parent;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -18,6 +23,16 @@ public class ParentInfoRequest {
     public ParentInfoRequest(String requestInfo, List<ChildInfoRequest> childInfos) {
         this.requestInfo = requestInfo;
         this.childInfos = childInfos;
+    }
+
+    public Parent toParent() {
+        return new Parent(requestInfo);
+    }
+
+    public List<Child> toChildren() {
+        return childInfos.stream()
+            .map(ChildInfoRequest::toChild)
+            .collect(toList());
     }
 
     public String getRequestInfo() {

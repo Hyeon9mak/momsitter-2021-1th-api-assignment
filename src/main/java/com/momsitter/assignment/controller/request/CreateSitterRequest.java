@@ -1,6 +1,7 @@
 package com.momsitter.assignment.controller.request;
 
 import com.momsitter.assignment.domain.Member;
+import com.momsitter.assignment.domain.Sitter;
 import java.time.LocalDate;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -60,6 +61,10 @@ public class CreateSitterRequest {
             password,
             email
         );
+    }
+
+    public Sitter toSitter() {
+        return sitterInfo.toSitter();
     }
 
     public String getName() {
