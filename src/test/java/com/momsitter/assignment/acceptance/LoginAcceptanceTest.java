@@ -1,8 +1,8 @@
 package com.momsitter.assignment.acceptance;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 import com.momsitter.assignment.controller.request.CreateSitterRequest;
 import com.momsitter.assignment.controller.request.LoginRequest;
@@ -43,7 +43,7 @@ public class LoginAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = postRequestWithBody("/api/login", request);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(UNAUTHORIZED.value());
         assertThat(response.as(ExceptionResponse.class)).isNotNull();
     }
 

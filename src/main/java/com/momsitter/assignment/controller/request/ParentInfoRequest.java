@@ -5,7 +5,6 @@ import static java.util.stream.Collectors.toList;
 import com.momsitter.assignment.domain.Child;
 import com.momsitter.assignment.domain.Parent;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 

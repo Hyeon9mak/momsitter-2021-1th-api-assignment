@@ -1,6 +1,7 @@
 package com.momsitter.assignment.exception;
 
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,10 +21,17 @@ public class ExceptionAdvice {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExceptionAdvice.class);
 
     @ExceptionHandler(MomSitterException.class)
-    public ResponseEntity<ExceptionResponse> KitchenposExceptionHandler(MomSitterException e) {
+    public ResponseEntity<ExceptionResponse> kitchenposExceptionHandler(MomSitterException e) {
         LOGGER.warn(e.getMessage());
 
         return ResponseEntity.badRequest().body(new ExceptionResponse(e.getMessage()));
+    }
+
+    @ExceptionHandler({AuthorizationException.class, LoginFailedException.class})
+    public ResponseEntity<ExceptionResponse> authorizationExceptionHandler(MomSitterException e) {
+        LOGGER.warn(e.getMessage());
+
+        return ResponseEntity.status(UNAUTHORIZED).body(new ExceptionResponse(e.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

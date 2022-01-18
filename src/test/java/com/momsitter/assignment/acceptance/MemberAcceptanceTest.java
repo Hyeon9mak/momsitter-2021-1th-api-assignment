@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 import com.momsitter.assignment.controller.request.ChildInfoRequest;
 import com.momsitter.assignment.controller.request.CreateParentRequest;
@@ -163,7 +164,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         );
 
         // then
-        assertThat(response.statusCode()).isEqualTo(BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(UNAUTHORIZED.value());
         assertThat(response.as(ExceptionResponse.class)).isNotNull();
     }
 
@@ -356,7 +357,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = getRequestWithToken("/api/members/me", "이상한값" + token);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(UNAUTHORIZED.value());
         assertThat(response.as(ExceptionResponse.class)).isNotNull();
     }
 
@@ -445,7 +446,7 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         );
 
         // then
-        assertThat(response.statusCode()).isEqualTo(BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(UNAUTHORIZED.value());
         assertThat(response.as(ExceptionResponse.class)).isNotNull();
     }
 

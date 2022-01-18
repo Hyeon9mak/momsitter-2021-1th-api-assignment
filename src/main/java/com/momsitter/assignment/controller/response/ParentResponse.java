@@ -1,10 +1,7 @@
 package com.momsitter.assignment.controller.response;
 
-import com.momsitter.assignment.domain.Child;
 import com.momsitter.assignment.domain.Member;
-import com.momsitter.assignment.domain.Parent;
 import java.time.LocalDate;
-import java.util.List;
 
 public class ParentResponse {
 
