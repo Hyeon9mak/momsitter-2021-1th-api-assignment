@@ -103,6 +103,11 @@ public class Member {
         this.parent.mappedBy(this);
     }
 
+    public void update(Password password, Email email) {
+        this.password = password;
+        this.email = email;
+    }
+
     public boolean isSitter() {
         return Objects.nonNull(sitter);
     }

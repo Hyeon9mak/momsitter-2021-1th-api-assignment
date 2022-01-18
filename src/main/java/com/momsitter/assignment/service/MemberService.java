@@ -4,6 +4,7 @@ import com.momsitter.assignment.controller.request.CreateParentRequest;
 import com.momsitter.assignment.controller.request.CreateSitterRequest;
 import com.momsitter.assignment.controller.request.ParentInfoRequest;
 import com.momsitter.assignment.controller.request.SitterInfoRequest;
+import com.momsitter.assignment.controller.request.UpdateInfoRequest;
 import com.momsitter.assignment.controller.response.MemberResponse;
 import com.momsitter.assignment.controller.response.ParentResponse;
 import com.momsitter.assignment.controller.response.SitterResponse;
@@ -38,7 +39,7 @@ public class MemberService {
 
     @Transactional
     public SitterResponse createAndAddSitterRole(Long memberNumber, SitterInfoRequest request) {
-        Member member = findByNumber(memberNumber);
+        Member member = findMemberByNumber(memberNumber);
 
         member.addRole(request.toSitter());
 
@@ -59,7 +60,7 @@ public class MemberService {
 
     @Transactional
     public ParentResponse createAndAddParentRole(Long memberNumber, ParentInfoRequest request) {
-        Member member = findByNumber(memberNumber);
+        Member member = findMemberByNumber(memberNumber);
 
         Parent parent = request.toParent();
         parent.addChildren(request.toChildren());
@@ -76,10 +77,20 @@ public class MemberService {
         }
     }
 
-    // TODO: 테스트코드 작성
     public MemberResponse findMemberInfo(Long memberNumber) {
-        Member member = findByNumber(memberNumber);
+        Member member = findMemberByNumber(memberNumber);
 
+        return getMemberResponseByRole(member);
+    }
+
+    public MemberResponse updateMemberInfo(Long memberNumber, UpdateInfoRequest request) {
+        Member member = findMemberByNumber(memberNumber);
+        member.update(request.toPassword(), request.toEmail());
+
+        return getMemberResponseByRole(member);
+    }
+
+    private MemberResponse getMemberResponseByRole(Member member) {
         if (member.isSitter() && member.isNotParent()) {
             return MemberResponse.sitter(member);
         }
@@ -91,10 +102,10 @@ public class MemberService {
         return MemberResponse.all(member);
     }
 
-    private Member findByNumber(Long number) {
-        return memberRepository.findByNumber(number)
+    private Member findMemberByNumber(Long memberNumber) {
+        return memberRepository.findByNumber(memberNumber)
             .orElseThrow(() -> new MemberNotFoundException(
-                String.format("%s 에 해당하는 회원이 존재하지 않습니다.", number)
+                String.format("%s 에 해당하는 회원이 존재하지 않습니다.", memberNumber)
             ));
     }
 }

@@ -6,6 +6,7 @@ import com.momsitter.assignment.controller.request.CreateParentRequest;
 import com.momsitter.assignment.controller.request.CreateSitterRequest;
 import com.momsitter.assignment.controller.request.ParentInfoRequest;
 import com.momsitter.assignment.controller.request.SitterInfoRequest;
+import com.momsitter.assignment.controller.request.UpdateInfoRequest;
 import com.momsitter.assignment.controller.response.MemberResponse;
 import com.momsitter.assignment.controller.response.ParentResponse;
 import com.momsitter.assignment.controller.response.SitterResponse;
@@ -67,6 +68,16 @@ public class MemberController {
     @GetMapping("/me")
     public ResponseEntity<MemberResponse> findInfoOfMine(@AuthMember AuthMemberDto authMember) {
         MemberResponse response = memberService.findMemberInfo(authMember.getNumber());
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/me")
+    public ResponseEntity<MemberResponse> updateInfo(
+        @AuthMember AuthMemberDto authMember,
+        @Valid @RequestBody UpdateInfoRequest request
+    ) {
+        MemberResponse response = memberService.updateMemberInfo(authMember.getNumber(), request);
 
         return ResponseEntity.ok(response);
     }

@@ -9,6 +9,7 @@ import com.momsitter.assignment.controller.request.CreateParentRequest;
 import com.momsitter.assignment.controller.request.CreateSitterRequest;
 import com.momsitter.assignment.controller.request.ParentInfoRequest;
 import com.momsitter.assignment.controller.request.SitterInfoRequest;
+import com.momsitter.assignment.controller.request.UpdateInfoRequest;
 import com.momsitter.assignment.controller.response.MemberResponse;
 import com.momsitter.assignment.controller.response.ParentResponse;
 import com.momsitter.assignment.controller.response.SitterResponse;
@@ -253,6 +254,24 @@ class MemberServiceTest {
             assertThat(memberResponse.getSitterInfo()).isNotNull();
             assertThat(memberResponse.getParentInfo()).isNotNull();
         }
+    }
+
+    @DisplayName("회원 정보를 업데이트 할 수 있다.")
+    @Test
+    void updateMemberInfo() {
+        // given
+        SitterResponse sitterResponse = 시터_회원정보를_생성한다();
+
+        // when
+        UpdateInfoRequest request = new UpdateInfoRequest("qwer!@#123", "jjii@naver.com");
+        MemberResponse response = memberService.updateMemberInfo(
+            sitterResponse.getNumber(),
+            request
+        );
+
+        // then
+        assertThat(response.getNumber()).isEqualTo(sitterResponse.getNumber());
+        assertThat(response.getEmail()).isEqualTo(request.getEmail());
     }
 
     private SitterResponse 시터_회원정보를_생성한다() {

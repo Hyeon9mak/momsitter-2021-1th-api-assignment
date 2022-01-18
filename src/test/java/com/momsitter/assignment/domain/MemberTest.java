@@ -78,4 +78,27 @@ class MemberTest {
         assertThat(sitter.getMember()).isEqualTo(member);
         assertThat(parent.getMember()).isEqualTo(member);
     }
+
+    @DisplayName("Member의 Email과 Password를 변경할 수 있다.")
+    @Test
+    void update() {
+        // given
+        Member member = new Member(
+            "최현구",
+            LocalDate.of(2022, 1, 10),
+            "남",
+            "hyeon9mak",
+            "abc123!",
+            "hyeon9mak@mfort.co.kr"
+        );
+
+        // when
+        Password password = new Password("newPW999***");
+        Email email = new Email("hyeon9mak@gmail.com");
+        member.update(password, email);
+
+        // then
+        assertThat(member.getPassword()).isEqualTo(password.getValue());
+        assertThat(member.getEmailValue()).isEqualTo(email.getValue());
+    }
 }

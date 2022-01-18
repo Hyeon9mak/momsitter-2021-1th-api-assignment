@@ -11,6 +11,7 @@ import com.momsitter.assignment.controller.request.CreateSitterRequest;
 import com.momsitter.assignment.controller.request.LoginRequest;
 import com.momsitter.assignment.controller.request.ParentInfoRequest;
 import com.momsitter.assignment.controller.request.SitterInfoRequest;
+import com.momsitter.assignment.controller.request.UpdateInfoRequest;
 import com.momsitter.assignment.controller.response.LoginResponse;
 import com.momsitter.assignment.controller.response.MemberResponse;
 import com.momsitter.assignment.exception.ExceptionResponse;
@@ -408,6 +409,44 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(OK.value());
         assertThat(memberResponse.getSitterInfo()).isNotNull();
         assertThat(memberResponse.getParentInfo()).isNotNull();
+    }
+
+    @DisplayName("PUT /api/members/me - 회원의 이메일과 비밀번호를 변경할 수 있다.")
+    @Test
+    void updateInfo() {
+        ID_PASSWORD로_시터_회원가입을_진행한다("hyeon9mak", "password123!@#");
+        String token = 로그인후_토큰을_발급받는다("hyeon9mak", "password123!@#");
+
+        // when
+        UpdateInfoRequest request = new UpdateInfoRequest("qwer!@#123", "jjii@naver.com");
+        ExtractableResponse<Response> response = putRequestWithBodyAndToken(
+            "/api/members/me",
+            request,
+            token
+        );
+
+        // then
+        MemberResponse memberResponse = response.as(MemberResponse.class);
+        assertThat(response.statusCode()).isEqualTo(OK.value());
+        assertThat(memberResponse.getEmail()).isEqualTo(request.getEmail());
+    }
+
+    @DisplayName("PUT /api/members/me - 유효하지 않은 토큰으로 회원 정보변경 요청시 예외가 발생한다.")
+    @Test
+    void updateInfoException() {
+        ID_PASSWORD로_시터_회원가입을_진행한다("hyeon9mak", "password123!@#");
+
+        // when
+        UpdateInfoRequest request = new UpdateInfoRequest("qwer!@#123", "jjii@naver.com");
+        ExtractableResponse<Response> response = putRequestWithBodyAndToken(
+            "/api/members/me",
+            request,
+            "올바르지 않은 토큰"
+        );
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(BAD_REQUEST.value());
+        assertThat(response.as(ExceptionResponse.class)).isNotNull();
     }
 
     private void ID_PASSWORD로_시터_회원가입을_진행한다(String id, String password) {
