@@ -319,15 +319,14 @@ public class MemberAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> parentResponse = postRequestWithBody("/api/members/create-parent", request);
 
         // when
-        String token = 로그인후_토큰을_발급받는다("hyeon9mak", "pw123!@#");
         ExtractableResponse<Response> response = putRequestWithBodyAndToken(
             "/api/members/add-parent",
             parentInfo,
-            token
+            "invalid token"
         );
 
         // then
-        assertThat(response.statusCode()).isEqualTo(BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(UNAUTHORIZED.value());
         assertThat(response.as(ExceptionResponse.class)).isNotNull();
     }
 
