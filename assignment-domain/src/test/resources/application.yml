@@ -1,0 +1,16 @@
+spring:
+  config:
+    import:
+      - application-authorization.yml
+
+h2:
+  console:
+    enabled: true
+
+jpa:
+  properties:
+    hibernate:
+      format_sql: true
+  show_sql: true
+  hibernate:
+    ddl-auto: validate
