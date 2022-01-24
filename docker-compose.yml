@@ -1,0 +1,24 @@
+version: '3.7'
+
+services:
+  database:
+      image: oscarfonts/h2
+      restart: always
+      ports:
+        - 53306:3306 #포트번호 매핑
+      container_name: momsitter-database
+      environment:
+        TZ: Asia/Seoul # 타임존
+
+  application:
+    build: .
+    restart: always
+    ports:
+      - 8080:8080
+    depends_on:
+      - database
+    container_name: momsitter-application
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:h2:mem:testdb
+      SPRING_DATASOURCE_USERNAME: sa
+
