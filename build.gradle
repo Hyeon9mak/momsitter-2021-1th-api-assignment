@@ -4,6 +4,14 @@ plugins {
 	id 'java'
 }
 
+bootJar {
+	enabled = false
+}
+
+jar {
+	enabled = true
+}
+
 allprojects {
 	group = 'com.mom-sitter'
 	version = '0.0.1-SNAPSHOT'
