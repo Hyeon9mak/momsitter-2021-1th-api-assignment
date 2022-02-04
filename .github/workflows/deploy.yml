@@ -41,7 +41,7 @@ jobs:
           cache: 'gradle' # https://github.com/actions/setup-java#caching-packages-dependencies
 
       - name: build gradle
-        run: ./gradlew clean build
+        run: ./gradlew bootJar
 
       - name: Download dd-java-agent
         run: wget -O hyeon9mak/dd-java-agent.jar https://dtdg.co/latest-java-tracer
