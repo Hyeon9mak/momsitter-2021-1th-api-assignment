@@ -44,8 +44,8 @@ jobs:
         run: ./gradlew clean build
 
       - name: Download dd-java-agent
-        run: wget -O hyeon9mak/dd-java-agent.jar https://dtdg.co/latest-java-tracer
-        # -O 옵션을 통해 파일 이름 지정하는 것임.
+        run: wget -O assignment-api/dd-java-agent.jar https://dtdg.co/latest-java-tracer
+        # -O 옵션을 통해 파일 경로 및 이름 지정하는 것임.
 
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
