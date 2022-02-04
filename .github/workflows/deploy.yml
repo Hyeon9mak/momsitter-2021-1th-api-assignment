@@ -51,7 +51,7 @@ jobs:
         id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          SERVICE_TAG: hyeon9mak
+          SERVICE_TAG: . # /Dockerfile
           IMAGE_TAG: ${{ github.sha }} # Github가 제공하는 암호화
         run: |
           # Build a docker container and
