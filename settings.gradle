@@ -1,0 +1,5 @@
+rootProject.name = "momsitter-2021-1th-api-assignment"
+
+include 'assignment-api'
+include 'assignment-authorization'
+include 'assignment-domain'
