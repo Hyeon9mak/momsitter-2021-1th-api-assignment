@@ -6,7 +6,6 @@
 /* GRADLE */
 .gradle
 gradle
-gradlew
 gradlew.bat
 
 /* BUILD */

@@ -38,9 +38,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 11
-
-      - name: update gradlew authority
-        run: chmod +x gradlew
+          cache: 'gradle' # https://github.com/actions/setup-java#caching-packages-dependencies
 
       - name: build gradle
         run: ./gradlew clean build
