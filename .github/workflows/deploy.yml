@@ -37,11 +37,11 @@ jobs:
         uses: actions/setup-java@v2
         with:
           distribution: 'temurin'
-          java-version: '11'
+          java-version: 11
           cache: 'gradle' # https://github.com/actions/setup-java#caching-packages-dependencies
 
       - name: build gradle
-        run: gradlew clean build
+        run: ./gradlew clean build
 
       - name: Download dd-java-agent
         run: wget -O hyeon9mak/dd-java-agent.jar https://dtdg.co/latest-java-tracer
