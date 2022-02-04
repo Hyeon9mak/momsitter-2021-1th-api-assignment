@@ -2,7 +2,7 @@ name: Deploy hyeon9mak momsitter-assignment
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   deploy:
